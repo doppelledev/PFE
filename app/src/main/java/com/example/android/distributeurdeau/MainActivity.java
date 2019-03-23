@@ -21,8 +21,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.distributeurdeau.models.Farmer;
-
 import jade.android.AndroidHelper;
 import jade.android.MicroRuntimeService;
 import jade.android.MicroRuntimeServiceBinder;
@@ -41,12 +39,13 @@ public class MainActivity extends AppCompatActivity {
     public static final String NICK_NAME = "Initial Agent";
 
     private MicroRuntimeServiceBinder microRuntimeServiceBinder;
-    private ServiceConnection serviceConnection;
+    public static ServiceConnection serviceConnection;
     private Receiver receiver;
 
     private Button mainB;
     private TextView mainTV;
     private ProgressBar mainPB;
+    public static boolean b = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +155,10 @@ public class MainActivity extends AppCompatActivity {
                                                IBinder service) {
                     microRuntimeServiceBinder = (MicroRuntimeServiceBinder) service;
                     Log.d(TAG, "startChat(): Gateway successfully bound to MicroRuntimeService");
-                    startContainer(profile);
+                    if (MainActivity.b) {
+                        startContainer(profile);
+                        MainActivity.b = false;
+                    }
                 }
 
                 public void onServiceDisconnected(ComponentName className) {
@@ -269,29 +271,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-//        microRuntimeServiceBinder.stopAgentContainer(new RuntimeCallback<Void>() {
-//            @Override
-//            public void onSuccess(Void thisIsNull) {
-//                initialAgentStarted = false;
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable throwable) {
-//                Log.d(TAG, "onFailure: failed to stop agent container");
-//                agentStartupCallback.onFailure(throwable);
-//            }
-//        });
+
         super.onStop();
     }
 
+
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy: destroying");
-        try {
-            MicroRuntime.killAgent(NICK_NAME);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
         unbindService(serviceConnection);
         unregisterReceiver(receiver);
         super.onDestroy();

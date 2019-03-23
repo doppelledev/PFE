@@ -1,14 +1,19 @@
 package com.example.android.distributeurdeau;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.android.distributeurdeau.models.Farmer;
 
+import jade.android.MicroRuntimeService;
 import jade.core.MicroRuntime;
 import jade.core.NotFoundException;
 import jade.wrapper.ControllerException;
@@ -18,6 +23,7 @@ public class FarmerActivity extends AppCompatActivity {
     private static final String TAG = "FarmerActivity";
 
     private Farmer farmer;
+    private LoginInterface loginInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +32,33 @@ public class FarmerActivity extends AppCompatActivity {
 
         farmer = (Farmer) getIntent().getSerializableExtra("farmer");
         Log.d(TAG, "onCreate: farmer: " + farmer.getFarmer_num());
+
+
+        bindService(new Intent(getApplicationContext(), MicroRuntimeService.class),
+                MainActivity.serviceConnection,
+                Context.BIND_AUTO_CREATE);
+        try {
+            loginInterface =
+                    MicroRuntime
+                            .getAgent(farmer.getFarmer_num())
+                            .getO2AInterface(LoginInterface.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d(TAG, "onCreate: error: " + e);
+        }
+        TextView b = findViewById(R.id.farmerB);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (loginInterface != null) {
+                    loginInterface.authenticate("hhhh", "hhhhhhh");
+                } else {
+                    Log.d(TAG, "onCreate: iinterface is null");
+                }
+            }
+        });
+
     }
 
     @Override
@@ -56,6 +89,7 @@ public class FarmerActivity extends AppCompatActivity {
             Log.d(TAG, "logout: error: " + e);
         }
     }
+
 
     @Override
     public void onBackPressed() {
