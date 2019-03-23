@@ -41,10 +41,9 @@ public class LoginActivity extends AppCompatActivity {
     public static final String START_FARMER_ACTIVITY = "start-farmer-activity";
     public static final String LOGIN_FAILED = "login failed";
     public static final String LOGIN_SUCCEEDED = "login succeeded";
-    private static final String NICK_NAME = "Farmer Agent";
 
     private MicroRuntimeServiceBinder microRuntimeServiceBinder;
-    public static ServiceConnection serviceConnection;
+    private ServiceConnection serviceConnection;
 
     private LoginInterface loginInterface;
     private Receiver receiver;
@@ -117,8 +116,7 @@ public class LoginActivity extends AppCompatActivity {
             if (action.equals(LOGIN_SUCCEEDED)) {
                 Log.d(TAG, "onReceive: login succeeded");
                 Farmer farmer = (Farmer) intent.getSerializableExtra("farmer");
-                //new StartAgentAsync().execute(getApplicationContext(), farmer);
-                initiateService(getApplicationContext(), farmer);
+                startFarmerService(farmer);
             } else if (action.equals(LOGIN_FAILED)) {
                 failed();
             }  else if (action.equals(START_FARMER_ACTIVITY)) {
@@ -132,53 +130,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    static class StartAgentAsync extends AsyncTask<Object, Void, Void> {
-        @Override
-        protected Void doInBackground(Object... args) {
-            try {
-                Log.d(TAG, "doInBackground: starting agent");
-                Log.d(TAG, "doInBackground: microRuntim is running: " + MicroRuntime.isRunning());
-                MicroRuntime.startAgent(
-                        ((Farmer) args[1]).getFarmer_num(),
-                        FarmerAgent.class.getName(),
-                        args
-                );
-            } catch (Exception e) {
-                Log.d(TAG, "onReceive: exception " + e);
-                e.printStackTrace();
-            }
-            return null;
-        }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Log.d(TAG, "onPostExecute: woho");
-        }
-    }
+    private void startFarmerService(final Farmer farmer) {
 
-    private void initiateService(final Context context, final Farmer farmer) {
-        SharedPreferences sharedPref = getSharedPreferences(
-                "networkSettings", Context.MODE_PRIVATE);
-        String host = sharedPref.getString("host", "localhost");
-        String port = sharedPref.getString("port", "3000");
-
-        final Properties profile = new Properties();
-        profile.setProperty(Profile.MAIN_HOST, host);
-        profile.setProperty(Profile.MAIN_PORT, port);
-        profile.setProperty(Profile.MAIN, Boolean.FALSE.toString());
-        profile.setProperty(Profile.JVM, Profile.ANDROID);
-
-        if (AndroidHelper.isEmulator()) {
-            // Emulator: this is needed to work with emulated devices
-            profile.setProperty(Profile.LOCAL_HOST, AndroidHelper.LOOPBACK);
-        } else {
-            WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-            String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
-            profile.setProperty(Profile.LOCAL_HOST, ip);
-            Log.d(TAG, ip);
-        }
-        //Emulator: this is not really needed on a real device
-        profile.setProperty(Profile.LOCAL_PORT, "2000");
 
         if (microRuntimeServiceBinder == null) {
             serviceConnection = new ServiceConnection() {
@@ -186,7 +140,7 @@ public class LoginActivity extends AppCompatActivity {
                                                IBinder service) {
                     microRuntimeServiceBinder = (MicroRuntimeServiceBinder) service;
                     Log.d(TAG, "startChat(): Gateway successfully bound to MicroRuntimeService");
-                    startContainer(profile, farmer);
+                    startAgent(farmer);
                 }
 
                 public void onServiceDisconnected(ComponentName className) {
@@ -200,29 +154,6 @@ public class LoginActivity extends AppCompatActivity {
                     Context.BIND_AUTO_CREATE);
         } else {
             Log.d(TAG, "startChat(): MicroRumtimeGateway already binded to service");
-            startContainer(profile, farmer);
-        }
-    }
-
-    private void startContainer(Properties profile, final Farmer farmer) {
-        if (!MicroRuntime.isRunning()) {
-            microRuntimeServiceBinder.startAgentContainer(profile,
-                    new RuntimeCallback<Void>() {
-                        @Override
-                        public void onSuccess(Void thisIsNull) {
-                            Log.d(TAG, "startContainer(): Successfully start of the container...");
-                            startAgent(farmer);
-                        }
-
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            Log.d(TAG, "startContainer(): Failed to start the container..."
-                                    + throwable.getMessage() + ", cause: " + throwable.getCause());
-                            throwable.printStackTrace();
-                            failed();
-                        }
-                    });
-        } else {
             startAgent(farmer);
         }
     }
@@ -271,7 +202,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onDestroy() {
         Log.d(TAG, "onDestroy: destroying");
         unregisterReceiver(receiver);
-        unbindService(serviceConnection);
         super.onDestroy();
     }
 }

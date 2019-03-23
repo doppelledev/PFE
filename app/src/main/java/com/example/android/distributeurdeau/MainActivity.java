@@ -37,8 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     public static final String NICK_NAME = "Initial Agent";
-
-    private MicroRuntimeServiceBinder microRuntimeServiceBinder;
+     public static MicroRuntimeServiceBinder microRuntimeServiceBinder;
     public static ServiceConnection serviceConnection;
     private Receiver receiver;
 
@@ -155,10 +154,7 @@ public class MainActivity extends AppCompatActivity {
                                                IBinder service) {
                     microRuntimeServiceBinder = (MicroRuntimeServiceBinder) service;
                     Log.d(TAG, "startChat(): Gateway successfully bound to MicroRuntimeService");
-                    if (MainActivity.b) {
-                        startContainer(profile);
-                        MainActivity.b = false;
-                    }
+                    startContainer(profile);
                 }
 
                 public void onServiceDisconnected(ComponentName className) {
@@ -278,6 +274,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        try {
+            MicroRuntime.killAgent(NICK_NAME);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
         unbindService(serviceConnection);
         unregisterReceiver(receiver);
         super.onDestroy();
