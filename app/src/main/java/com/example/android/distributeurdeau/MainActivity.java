@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     public static final String NICK_NAME = "Initial Agent";
-     public static MicroRuntimeServiceBinder microRuntimeServiceBinder;
+    MicroRuntimeServiceBinder microRuntimeServiceBinder;
     public static ServiceConnection serviceConnection;
     private Receiver receiver;
 
@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        serviceConnection = null;
+        microRuntimeServiceBinder = null;
 
         receiver = new Receiver();
         IntentFilter filter = new IntentFilter();
@@ -154,7 +156,10 @@ public class MainActivity extends AppCompatActivity {
                                                IBinder service) {
                     microRuntimeServiceBinder = (MicroRuntimeServiceBinder) service;
                     Log.d(TAG, "startChat(): Gateway successfully bound to MicroRuntimeService");
-                    startContainer(profile);
+                    if (b) {
+                        startContainer(profile);
+                        b = false;
+                    }
                 }
 
                 public void onServiceDisconnected(ComponentName className) {

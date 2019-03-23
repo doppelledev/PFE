@@ -81,7 +81,9 @@ public class FarmerActivity extends AppCompatActivity {
         try {
             Log.d(TAG, "logout: killing agent");
             MicroRuntime.killAgent(farmer.getFarmer_num());
+            unbindService(MainActivity.serviceConnection);
             Intent intent = new Intent(this, MainActivity.class);
+            intent.setAction("reconnect");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         } catch (NotFoundException e) {

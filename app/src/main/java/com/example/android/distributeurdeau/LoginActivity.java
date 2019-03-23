@@ -99,6 +99,10 @@ public class LoginActivity extends AppCompatActivity {
         filter.addAction(LOGIN_SUCCEEDED);
         filter.addAction(START_FARMER_ACTIVITY);
         registerReceiver(receiver, filter);
+
+        bindService(new Intent(getApplicationContext(), MicroRuntimeService.class),
+                MainActivity.serviceConnection,
+                Context.BIND_AUTO_CREATE);
     }
 
 
@@ -116,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
             if (action.equals(LOGIN_SUCCEEDED)) {
                 Log.d(TAG, "onReceive: login succeeded");
                 Farmer farmer = (Farmer) intent.getSerializableExtra("farmer");
-                startFarmerService(farmer);
+                new DeployFarmer().execute(getApplicationContext(), farmer);
             } else if (action.equals(LOGIN_FAILED)) {
                 failed();
             }  else if (action.equals(START_FARMER_ACTIVITY)) {
@@ -130,10 +134,24 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private class DeployFarmer extends AsyncTask<Object, Void, Void> {
+        @Override
+        protected Void doInBackground(Object... args) {
+            try {
+                MicroRuntime.startAgent(
+                        ((Farmer) args[1]).getFarmer_num(),
+                        FarmerAgent.class.getName(),
+                        args
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
 
     private void startFarmerService(final Farmer farmer) {
-
-
         if (microRuntimeServiceBinder == null) {
             serviceConnection = new ServiceConnection() {
                 public void onServiceConnected(ComponentName className,
@@ -157,7 +175,6 @@ public class LoginActivity extends AppCompatActivity {
             startAgent(farmer);
         }
     }
-
     private void startAgent(final Farmer farmer) {
         microRuntimeServiceBinder.startAgent(
                 farmer.getFarmer_num(),
@@ -185,8 +202,8 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
-
     private RuntimeCallback<AgentController> agentStartupCallback = new RuntimeCallback<AgentController>() {
+
         @Override
         public void onSuccess(AgentController agent) {
 
@@ -201,6 +218,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy: destroying");
+        try {
+            MicroRuntime.killAgent(MainActivity.NICK_NAME);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+        unbindService(MainActivity.serviceConnection);
         unregisterReceiver(receiver);
         super.onDestroy();
     }
