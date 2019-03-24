@@ -61,6 +61,7 @@ public class FarmerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_farmer);
+        setTitle(getString(R.string.plots));
 
         // The current farmer's data
         farmer = (Farmer) getIntent().getSerializableExtra(Strings.EXTRA_FARMER);

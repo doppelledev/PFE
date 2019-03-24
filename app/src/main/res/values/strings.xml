@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Distributeur d\'eau</string>
+    <string name="login">Se connecter</string>
+    <string name="plots">Parcelles</string>
+    <string name="settings">Paramètres</string>
     <string name="start">commencer</string>
     <string name="retry">réessayer</string>
     <string name="empty">Vide</string>
