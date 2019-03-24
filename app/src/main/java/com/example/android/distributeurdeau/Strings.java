@@ -10,10 +10,13 @@ public class Strings {
     public static final String ACTION_LOGIN_SUCCEEDED = "login_succeeded";
     public static final String ACTION_REGISTRATION_FAILED = "reg_failed";
     public static final String ACTION_REGISTRATION_SUCCEEDED = "reg_succeeded";
+    public static final String ACTION_MODIFICATION_SUCCEDED = "modification_succeeded";
+    public static final String ACTION_MODIFICATION_FAILED = "modification_failed";
     // Intent extras
     public static final String EXTRA_FARMER = "farmer";
     // Ontology
     public static final String ONTOLOGY_AUTH = "authentication";
     public static final String ONTOLOGY_REG = "registration";
+
 
 }

@@ -57,11 +57,11 @@ public class FarmerAgent extends Agent implements FarmerInterface{
                 if (message != null) {
                     if (message.getPerformative() == ACLMessage.CONFIRM) {
                         Intent broadcast = new Intent();
-                        broadcast.setAction("success");
+                        broadcast.setAction(Strings.ACTION_MODIFICATION_SUCCEDED);
                         context.sendBroadcast(broadcast);
                     } else if (message.getPerformative() == ACLMessage.FAILURE) {
                         Intent broadcast = new Intent();
-                        broadcast.setAction("success");
+                        broadcast.setAction(Strings.ACTION_MODIFICATION_FAILED);
                         context.sendBroadcast(broadcast);
                     }
                 } else {

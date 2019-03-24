@@ -1,19 +1,19 @@
 package com.example.android.distributeurdeau;
 
-import jade.core.AID;
-import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
-import jade.lang.acl.ACLMessage;
-import jade.lang.acl.UnreadableException;
-
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.example.android.distributeurdeau.models.Database;
 import com.example.android.distributeurdeau.models.Farmer;
 
 import java.io.IOException;
+
+import jade.core.AID;
+import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 
 public class InitialAgent extends Agent implements LoginInterface {
     private static final String TAG = "InitialAgent";
@@ -42,6 +42,31 @@ public class InitialAgent extends Agent implements LoginInterface {
 
         // Add registration behaviour
         addBehaviour(new RegBehaviour());
+    }
+
+    @Override
+    public void authenticate(String numAgr, String pass) {
+        // Send an authentication request to the server with the provided credentials
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.setOntology(Strings.ONTOLOGY_AUTH);
+        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
+        message.addUserDefinedParameter(Database.farmer_num, numAgr);
+        message.addUserDefinedParameter(Database.password, pass);
+        send(message);
+    }
+
+    @Override
+    public void register(Farmer farmer) {
+        // Send a registration request to the server with the provided data
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.setOntology(Strings.ONTOLOGY_REG);
+        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
+        try {
+            message.setContentObject(farmer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        send(message);
     }
 
     private class AuthBehaviour extends CyclicBehaviour {
@@ -98,30 +123,5 @@ public class InitialAgent extends Agent implements LoginInterface {
                 block();
             }
         }
-    }
-
-    @Override
-    public void authenticate(String numAgr, String pass) {
-        // Send an authentication request to the server with the provided credentials
-        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-        message.setOntology(Strings.ONTOLOGY_AUTH);
-        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
-        message.addUserDefinedParameter(Database.farmer_num, numAgr);
-        message.addUserDefinedParameter(Database.password, pass);
-        send(message);
-    }
-
-    @Override
-    public void register(Farmer farmer) {
-        // Send a registration request to the server with the provided data
-        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-        message.setOntology(Strings.ONTOLOGY_REG);
-        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
-        try {
-            message.setContentObject(farmer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        send(message);
     }
 }

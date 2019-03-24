@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -97,34 +97,18 @@ public class LoginActivity extends AppCompatActivity {
         ).show();
     }
 
-    private class Receiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive: " + intent.getAction());
-            final String action = intent.getAction();
-            if (action == null)
-                return;
-
-            if (action.equals(Strings.ACTION_LOGIN_SUCCEEDED)) {
-                // if login succeeded, deploy the farmer agent
-                Log.d(TAG, "onReceive: login succeeded");
-                Farmer farmer = (Farmer) intent.getSerializableExtra("farmer");
-                new DeployFarmer().execute(getApplicationContext(), farmer);
-            }
-            else if (action.equals(Strings.ACTION_LOGIN_FAILED)) {
-                failed();
-            }
-            else if (action.equals(Strings.ACTION_LAUNCH_FARMER)) {
-                // launch the farmer activity
-                // This is triggered by the deployed farmer agent
-                Farmer farmer = (Farmer) intent.getSerializableExtra(Strings.EXTRA_FARMER);
-                Intent farmerIntent = new Intent(LoginActivity.this, FarmerActivity.class);
-                farmerIntent.putExtra(Strings.EXTRA_FARMER, farmer);
-                farmerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(farmerIntent);
-            }
+    @Override
+    protected void onDestroy() {
+        // kill the initial agent and dispose of the service and the receiver
+        Log.d(TAG, "onDestroy: destroying");
+        try {
+            MicroRuntime.killAgent(MainActivity.INITIAL_AGENT_NAME);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
         }
+        unbindService(MainActivity.serviceConnection);
+        unregisterReceiver(receiver);
+        super.onDestroy();
     }
 
     // This class takes care of deploying the FarmerAgent in a background thread
@@ -144,17 +128,31 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        // kill the initial agent and dispose of the service and the receiver
-        Log.d(TAG, "onDestroy: destroying");
-        try {
-            MicroRuntime.killAgent(MainActivity.INITIAL_AGENT_NAME);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
+    private class Receiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "onReceive: " + intent.getAction());
+            final String action = intent.getAction();
+            if (action == null)
+                return;
+
+            if (action.equals(Strings.ACTION_LOGIN_SUCCEEDED)) {
+                // if login succeeded, deploy the farmer agent
+                Log.d(TAG, "onReceive: login succeeded");
+                Farmer farmer = (Farmer) intent.getSerializableExtra("farmer");
+                new DeployFarmer().execute(getApplicationContext(), farmer);
+            } else if (action.equals(Strings.ACTION_LOGIN_FAILED)) {
+                failed();
+            } else if (action.equals(Strings.ACTION_LAUNCH_FARMER)) {
+                // launch the farmer activity
+                // This is triggered by the deployed farmer agent
+                Farmer farmer = (Farmer) intent.getSerializableExtra(Strings.EXTRA_FARMER);
+                Intent farmerIntent = new Intent(LoginActivity.this, FarmerActivity.class);
+                farmerIntent.putExtra(Strings.EXTRA_FARMER, farmer);
+                farmerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(farmerIntent);
+            }
         }
-        unbindService(MainActivity.serviceConnection);
-        unregisterReceiver(receiver);
-        super.onDestroy();
     }
 }

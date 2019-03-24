@@ -34,8 +34,8 @@ import jade.wrapper.ControllerException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
     public static final String INITIAL_AGENT_NAME = "Initial Agent";
+    private static final String TAG = "MainActivity";
     public static MicroRuntimeServiceBinder microRuntimeServiceBinder;
     public static ServiceConnection serviceConnection;
     public static boolean containerStarted = false;
@@ -44,6 +44,17 @@ public class MainActivity extends AppCompatActivity {
     private Button mainB;
     private TextView mainTV;
     private ProgressBar mainPB;
+    private RuntimeCallback<AgentController> agentStartupCallback = new RuntimeCallback<AgentController>() {
+        @Override
+        public void onSuccess(AgentController agent) {
+
+        }
+
+        @Override
+        public void onFailure(Throwable throwable) {
+            Log.d(TAG, "onFailure: name already in use");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -81,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         reset();
     }
-
 
     private void reset() {
         // reset the ui when user comes back to the activity
@@ -148,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
             WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
             String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
             profile.setProperty(Profile.LOCAL_HOST, ip);
-            Log.d(TAG, ip);
         }
         //Emulator: this is not really needed on a real device
         profile.setProperty(Profile.LOCAL_PORT, "2000");
@@ -207,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         microRuntimeServiceBinder.startAgent(
                 INITIAL_AGENT_NAME,
                 InitialAgent.class.getName(),
-                new Object[] { getApplicationContext() },
+                new Object[]{getApplicationContext()},
                 new RuntimeCallback<Void>() {
                     @Override
                     public void onSuccess(Void thisIsNull) {
@@ -227,31 +235,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    private RuntimeCallback<AgentController> agentStartupCallback = new RuntimeCallback<AgentController>() {
-        @Override
-        public void onSuccess(AgentController agent) {
-
-        }
-
-        @Override
-        public void onFailure(Throwable throwable) {
-            Log.d(TAG, "onFailure: name already in use");
-        }
-    };
-
-    private class Receiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            Log.d(TAG, "onReceive: " + action);
-            if (action != null && action.equals(Strings.ACTION_LAUNCH_LOGIN)) {
-                Intent showLogin = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(showLogin);
-            }
-        }
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -276,5 +259,17 @@ public class MainActivity extends AppCompatActivity {
         unbindService(serviceConnection);
         unregisterReceiver(receiver);
         super.onDestroy();
+    }
+
+    private class Receiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            Log.d(TAG, "onReceive: " + action);
+            if (action != null && action.equals(Strings.ACTION_LAUNCH_LOGIN)) {
+                Intent showLogin = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(showLogin);
+            }
+        }
     }
 }

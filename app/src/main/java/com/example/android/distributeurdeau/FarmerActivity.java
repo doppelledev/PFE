@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,9 +26,12 @@ import android.widget.Toast;
 import com.example.android.distributeurdeau.models.Farmer;
 import com.example.android.distributeurdeau.models.Plot;
 
-import java.util.Calendar;
 import java.sql.Date;
+import java.util.Calendar;
+import java.util.Objects;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jade.android.MicroRuntimeService;
 import jade.android.RuntimeCallback;
@@ -38,48 +41,65 @@ import jade.core.NotFoundException;
 public class FarmerActivity extends AppCompatActivity {
 
     private static final String TAG = "FarmerActivity";
+    private static final Pattern typePattern = Pattern.compile("^[a-zA-Zéèàç]{3,14}$");
 
     private Farmer farmer;
+    private Date date;
     private FarmerInterface farmerInterface;
+    private Receiver receiver;
+    private DatePickerDialog.OnDateSetListener calListener;
 
     private Spinner plotS;
     private EditText typeET;
     private EditText areaET;
     private EditText qteET;
     private TextView dateTV;
-
-    private Date date;
-    private Receiver receiver;
     private ProgressBar farmerPB;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_farmer);
 
-        farmer = (Farmer) getIntent().getSerializableExtra("farmer");
-        Log.d(TAG, "onCreate: farmer: " + farmer.getPlots().get(0).toString());
+        // The current farmer's data
+        farmer = (Farmer) getIntent().getSerializableExtra(Strings.EXTRA_FARMER);
+        Log.d(TAG, "onCreate: " + farmer);
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction("success");
-        filter.addAction("failure");
+        filter.addAction(Strings.ACTION_MODIFICATION_FAILED);
+        filter.addAction(Strings.ACTION_MODIFICATION_SUCCEDED);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
         bindService(new Intent(getApplicationContext(), MicroRuntimeService.class),
                 MainActivity.serviceConnection,
                 Context.BIND_AUTO_CREATE);
+
+        // Get the interface to communicate with the agent
         try {
-            farmerInterface =
-                    MicroRuntime
-                            .getAgent(farmer.getFarmer_num())
-                            .getO2AInterface(FarmerInterface.class);
+            farmerInterface = MicroRuntime.getAgent(farmer.getFarmer_num())
+                    .getO2AInterface(FarmerInterface.class);
 
         } catch (Exception e) {
             e.printStackTrace();
             Log.d(TAG, "onCreate: error: " + e);
         }
 
+        // a listener to handle date pick
+        calListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                date = new Date(year - 1900, month, dayOfMonth);
+                dateTV.setText(formatDate(date));
+            }
+        };
+
+        setupViews();
+        populateSpinner();
+    }
+
+    private void setupViews() {
         farmerPB = findViewById(R.id.farmerPB);
         farmerPB.setVisibility(View.GONE);
 
@@ -94,70 +114,29 @@ public class FarmerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 farmerPB.setVisibility(View.VISIBLE);
-                final String type = typeET.getText().toString();
-                if (type.isEmpty()) {
-                    return;
-                }
-                final String area = areaET.getText().toString();
-                if (area.isEmpty()) {
-                    return;
-                }
-                final String qte = qteET.getText().toString();
-                if (qte.isEmpty()) {
-                    return;
-                }
-                Plot plot = farmer.getPlots().get(plotS.getSelectedItemPosition());
-                plot.setType(type);
-                plot.setArea(Float.valueOf(area));
-                plot.setWater_qte(Float.valueOf(qte));
-                plot.setS_date(date);
-                Log.d(TAG, "onClick: " + plot);
-                farmerInterface.modifyPlot(plot);
+                attemptToSave();
             }
         });
-
-        final DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                date = new Date(year-1900, month, dayOfMonth);
-                month = month + 1;
-                dateTV.setText(dayOfMonth + "-" + month + "-" + year);
-            }
-        };
 
         Button editB = findViewById(R.id.editB);
         editB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar cal = Calendar.getInstance();
-                int year = cal.get(Calendar.YEAR);
-                int month = cal.get(Calendar.MONTH);
-                int day = cal.get(Calendar.DAY_OF_MONTH);
-
-                DatePickerDialog dialog = new DatePickerDialog(
-                        FarmerActivity.this,
-                        android.R.style.Theme_Holo_Light_Dialog_MinWidth,
-                        listener,
-                        year, month, day
-                );
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.show();
+                showCalendar();
             }
         });
-        populateSpinner();
     }
 
     private void populateSpinner() {
-        // Plots names spinner
         Vector<Plot> plots = farmer.getPlots();
-        String [] plotsNames;
+        String[] plotsNames;
         if (plots.size() > 0) {
             plotsNames = new String[plots.size()];
-            for (int i =0; i < plots.size(); i++) {
+            for (int i = 0; i < plots.size(); i++) {
                 plotsNames[i] = plots.get(i).getP_name();
             }
         } else {
-            plotsNames = new String[] {"Vide"};
+            plotsNames = new String[]{getString(R.string.empty)};
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, plotsNames);
@@ -178,34 +157,79 @@ public class FarmerActivity extends AppCompatActivity {
     }
 
     private void refreshFields(int index) {
+        // show plot data when the user selects it from the spinner
         final Plot plot = farmer.getPlots().get(index);
         typeET.setText(plot.getType());
         areaET.setText(String.valueOf(plot.getArea()));
-        date = plot.getS_date();
-        final String dateStr = (date.getDay() + 1) + "-" + (date.getMonth() + 1) + "-" + (date.getYear() + 1900);
-        dateTV.setText(dateStr);
+        dateTV.setText(formatDate(plot.getS_date()));
         qteET.setText(String.valueOf(plot.getWater_qte()));
     }
 
-    private class Receiver extends BroadcastReceiver{
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            farmerPB.setVisibility(View.GONE);
-            final String action = intent.getAction();
-            if (action.equals("success")) {
-                success();
-            } else {
-                failure();
-            }
+    private String formatDate(Date date) {
+        return (date.getDay() + 1) + "-" + (date.getMonth() + 1) + "-" + (date.getYear() + 1900);
+    }
+
+
+    private void showCalendar() {
+        // show a calendar for the user to pick a date
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog dialog = new DatePickerDialog(
+                FarmerActivity.this,
+                android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                calListener,
+                year, month, day
+        );
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+    }
+
+    private void attemptToSave() {
+        // Get user input and validate it
+        final String type = typeET.getText().toString();
+        if (!validateType(type)) {
+            invalid(getString(R.string.toast_invalid_type));
+            return;
         }
+        final String area = areaET.getText().toString();
+        if (area.isEmpty()) {
+            invalid(getString(R.string.toast_invalid_area));
+            return;
+        }
+        final String qte = qteET.getText().toString();
+        if (qte.isEmpty()) {
+            invalid(getString(R.string.toast_invalid_qte));
+            return;
+        }
+        Plot plot = farmer.getPlots().get(plotS.getSelectedItemPosition());
+        plot.setType(type);
+        plot.setArea(Float.valueOf(area));
+        plot.setWater_qte(Float.valueOf(qte));
+        if (date != null)
+            plot.setS_date(date);
+        // Tell the agent to save user input
+        farmerInterface.modifyPlot(plot);
+    }
+
+    private boolean validateType(String type) {
+        Matcher matcher = typePattern.matcher(type);
+        return matcher.matches();
+    }
+
+    private void invalid(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        farmerPB.setVisibility(View.GONE);
     }
 
     private void success() {
-        Toast.makeText(this, "Modifications enregistrés", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.toast_modifications_saved), Toast.LENGTH_SHORT).show();
     }
 
     private void failure() {
-        Toast.makeText(this, "Erreur", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -227,7 +251,9 @@ public class FarmerActivity extends AppCompatActivity {
     private void logout() {
         try {
             Log.d(TAG, "logout: killing agent");
+            // kill agent
             MicroRuntime.killAgent(farmer.getFarmer_num());
+            // stop container
             MainActivity.microRuntimeServiceBinder.stopAgentContainer(
                     new RuntimeCallback<Void>() {
                         @Override
@@ -242,7 +268,9 @@ public class FarmerActivity extends AppCompatActivity {
                         }
                     }
             );
+            // set the boolean to false, because the container was stopped
             MainActivity.containerStarted = false;
+            // start MainActivity
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -251,7 +279,6 @@ public class FarmerActivity extends AppCompatActivity {
             Log.d(TAG, "logout: error: " + e);
         }
     }
-
 
     @Override
     public void onBackPressed() {
@@ -264,5 +291,20 @@ public class FarmerActivity extends AppCompatActivity {
         unregisterReceiver(receiver);
         unbindService(MainActivity.serviceConnection);
         super.onDestroy();
+    }
+
+    private class Receiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            farmerPB.setVisibility(View.GONE);
+            final String action = intent.getAction();
+            if (action == null)
+                return;
+            if (action.equals(Strings.ACTION_MODIFICATION_SUCCEDED)) {
+                success();
+            } else {
+                failure();
+            }
+        }
     }
 }
