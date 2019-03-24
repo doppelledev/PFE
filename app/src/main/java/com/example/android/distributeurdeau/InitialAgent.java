@@ -4,7 +4,6 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
 import android.content.Intent;
@@ -16,24 +15,8 @@ import com.example.android.distributeurdeau.models.Farmer;
 
 import java.io.IOException;
 
-/**
- * This agent implements the logic of the chat client running on the user
- * terminal. User interactions are handled by the ChatGui in a
- * terminal-dependent way. The ChatClientAgent performs 3 types of behaviours: -
- * ParticipantsManager. A CyclicBehaviour that keeps the list of participants up
- * to date on the basis of the information received from the ChatManagerAgent.
- * This behaviour is also in charge of subscribing as a participant to the
- * ChatManagerAgent. - ChatListener. A CyclicBehaviour that handles messages
- * from other chat participants. - ChatSpeaker. A OneShotBehaviour that sends a
- * message conveying a sentence written by the user to other chat participants.
- *
- * @author Giovanni Caire - TILAB
- */
 public class InitialAgent extends Agent implements LoginInterface {
-    private static final String TAG = "InitaltAgent";
-    private static final long serialVersionUID = 1594371294421614291L;
-
-    private static final String CHAT_ID = "__chat__";
+    private static final String TAG = "InitialAgent";
 
     private Context context;
 
@@ -45,92 +28,83 @@ public class InitialAgent extends Agent implements LoginInterface {
             }
         }
 
-        // Register language and ontology
-
-
-        // Add initial behaviours
-        addBehaviour(new ChatListener(this));
-
         // Activate the GUI
         registerO2AInterface(LoginInterface.class, this);
         Log.d(TAG, "setup: O2A: " + getO2AInterface(LoginInterface.class));
+
+        // send a broadcast to start LoginActivity
         Intent broadcast = new Intent();
         broadcast.setAction(Strings.ACTION_LAUNCH_LOGIN);
         context.sendBroadcast(broadcast);
 
-        final MessageTemplate template = MessageTemplate.and(
-                MessageTemplate.or(
-                        MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
-                        MessageTemplate.MatchPerformative(ACLMessage.REFUSE)
-                ),
-                MessageTemplate.MatchOntology("authentication")
-        );
+        // Add authentication behaviour
+        addBehaviour(new AuthBehaviour());
 
-        addBehaviour(new CyclicBehaviour() {
-            @Override
-            public void action() {
-                ACLMessage message = receive(template);
-                if (message != null) {
-                    Log.d(TAG, "action: message received");
-                    if (message.getPerformative() == ACLMessage.CONFIRM) {
-                        Farmer f = null;
-                        try {
-                            f = (Farmer) message.getContentObject();
-                        } catch (UnreadableException e) {
-                            e.printStackTrace();
-                        }
-                        Log.d(TAG, "action: farmer" + f);
-                        Intent intent = new Intent();
-                        intent.setAction(Strings.ACTION_LOGIN_SUCCEEDED);
-                        intent.putExtra("farmer", f);
-                        context.sendBroadcast(intent);
-                    } else {
-                        Intent intent = new Intent();
-                        intent.setAction(Strings.ACTION_LOGIN_FAILED);
-                        context.sendBroadcast(intent);
-                    }
-                } else {
-                    block();
-                }
-            }
-        });
-
-        final MessageTemplate regTemplate = MessageTemplate.and(
-                MessageTemplate.or(
-                        MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
-                        MessageTemplate.MatchPerformative(ACLMessage.FAILURE)
-                ),
-                MessageTemplate.MatchOntology("registration")
-        );
-        addBehaviour(new CyclicBehaviour() {
-            @Override
-            public void action() {
-                ACLMessage message = receive(regTemplate);
-                if (message != null) {
-                    String action;
-                    if (message.getPerformative() == ACLMessage.CONFIRM)
-                        action = RegisterActivity.CREATED;
-                    else
-                        action = RegisterActivity.FAILED;
-
-                    Intent broadcast = new Intent();
-                    broadcast.setAction(action);
-                    context.sendBroadcast(broadcast);
-                    Log.d(TAG, "action: " + action);
-                } else {
-                    block();
-                }
-            }
-        });
+        // Add registration behaviour
+        addBehaviour(new RegBehaviour());
     }
 
-    protected void takeDown() {
+    private class AuthBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.AUTHENTICATION);
+            if (message != null) {
+                Log.d(TAG, "action: auth message received");
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    // The server authenticated the user
+                    // Retrieve his information
+                    Farmer f = null;
+                    try {
+                        f = (Farmer) message.getContentObject();
+                    } catch (UnreadableException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d(TAG, "action: farmer" + f);
+                    // And send a broadcast to launch FarmerActivity
+                    Intent intent = new Intent();
+                    intent.setAction(Strings.ACTION_LOGIN_SUCCEEDED);
+                    intent.putExtra(Strings.EXTRA_FARMER, f);
+                    context.sendBroadcast(intent);
+                } else {
+                    // The server couldn't authenticate the user
+                    // Send a broadcast to inform him
+                    Intent intent = new Intent();
+                    intent.setAction(Strings.ACTION_LOGIN_FAILED);
+                    context.sendBroadcast(intent);
+                }
+            } else {
+                block();
+            }
+        }
+    }
+
+    private class RegBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.REGISTRATION);
+            if (message != null) {
+                String action;
+                if (message.getPerformative() == ACLMessage.CONFIRM)
+                    action = Strings.ACTION_REGISTRATION_SUCCEEDED;
+                else
+                    action = Strings.ACTION_REGISTRATION_FAILED;
+
+                // Inform the RegisterActivity whether the registration succeeded or not
+                Intent broadcast = new Intent();
+                broadcast.setAction(action);
+                context.sendBroadcast(broadcast);
+                Log.d(TAG, "action: " + action);
+            } else {
+                block();
+            }
+        }
     }
 
     @Override
     public void authenticate(String numAgr, String pass) {
+        // Send an authentication request to the server with the provided credentials
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-        message.setOntology("authentication");
+        message.setOntology(Strings.ONTOLOGY_AUTH);
         message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
         message.addUserDefinedParameter(Database.farmer_num, numAgr);
         message.addUserDefinedParameter(Database.password, pass);
@@ -139,8 +113,9 @@ public class InitialAgent extends Agent implements LoginInterface {
 
     @Override
     public void register(Farmer farmer) {
+        // Send a registration request to the server with the provided data
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-        message.setOntology("registration");
+        message.setOntology(Strings.ONTOLOGY_REG);
         message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
         try {
             message.setContentObject(farmer);
@@ -149,32 +124,4 @@ public class InitialAgent extends Agent implements LoginInterface {
         }
         send(message);
     }
-
-    /**
-     * Inner class ChatListener. This behaviour registers as a chat participant
-     * and keeps the list of participants up to date by managing the information
-     * received from the ChatManager agent.
-     */
-    class ChatListener extends CyclicBehaviour {
-        private static final long serialVersionUID = 741233963737842521L;
-        private MessageTemplate template = MessageTemplate
-                .MatchConversationId(CHAT_ID);
-
-        ChatListener(Agent a) {
-            super(a);
-        }
-
-        public void action() {
-            ACLMessage msg = myAgent.receive(template);
-            if (msg != null) {
-                if (msg.getPerformative() == ACLMessage.INFORM) {
-                    Log.d(TAG, "action: message received: " + msg.getContent());
-                } else {
-                    Log.d(TAG, "action: something went wrong");
-                }
-            } else {
-                block();
-            }
-        }
-    } // END of inner class ChatListener
 }

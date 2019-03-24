@@ -242,7 +242,7 @@ public class FarmerActivity extends AppCompatActivity {
                         }
                     }
             );
-            MainActivity.containerStarted = true;
+            MainActivity.containerStarted = false;
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -261,6 +261,7 @@ public class FarmerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy: destroying");
+        unregisterReceiver(receiver);
         unbindService(MainActivity.serviceConnection);
         super.onDestroy();
     }

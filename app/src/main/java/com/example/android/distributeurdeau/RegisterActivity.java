@@ -18,9 +18,6 @@ import jade.core.MicroRuntime;
 import jade.wrapper.ControllerException;
 
 public class RegisterActivity extends AppCompatActivity {
-    public static final String CREATED = "created";
-    public static final String FAILED = "failed";
-
 
     private LoginInterface loginInterface;
 
@@ -48,8 +45,8 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(FAILED);
-        filter.addAction(CREATED);
+        filter.addAction(Strings.ACTION_REGISTRATION_FAILED);
+        filter.addAction(Strings.ACTION_REGISTRATION_SUCCEEDED);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -105,7 +102,7 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String msg;
-            if (intent.getAction().equals(CREATED)) {
+            if (intent.getAction().equals(Strings.ACTION_REGISTRATION_SUCCEEDED)) {
                 msg = "Compte crée";
                 finish();
             } else {

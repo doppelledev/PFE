@@ -1,15 +1,19 @@
 package com.example.android.distributeurdeau;
 
 public class Strings {
-    public static String NETWORK_SETTINGS = "network_settings";
+    public static final String NETWORK_SETTINGS = "network_settings";
 
     // Intent actions
-    public static String ACTION_LAUNCH_LOGIN = "launch_login";
-    public static String ACTION_LAUNCH_FARMER = "launch_farmer";
-    public static String ACTION_LOGIN_FAILED = "login_failed";
-    public static String ACTION_LOGIN_SUCCEEDED = "login_succeeded";
-
+    public static final String ACTION_LAUNCH_LOGIN = "launch_login";
+    public static final String ACTION_LAUNCH_FARMER = "launch_farmer";
+    public static final String ACTION_LOGIN_FAILED = "login_failed";
+    public static final String ACTION_LOGIN_SUCCEEDED = "login_succeeded";
+    public static final String ACTION_REGISTRATION_FAILED = "reg_failed";
+    public static final String ACTION_REGISTRATION_SUCCEEDED = "reg_succeeded";
     // Intent extras
-    public static String EXTRA_FARMER = "farmer";
+    public static final String EXTRA_FARMER = "farmer";
+    // Ontology
+    public static final String ONTOLOGY_AUTH = "authentication";
+    public static final String ONTOLOGY_REG = "registration";
 
 }
