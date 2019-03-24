@@ -14,4 +14,6 @@
     <string name="toast_invalid_qte">Quantité d\'eau invalide</string>
     <string name="toast_modifications_saved">Modifications enregistrées</string>
     <string name="toast_error">Erreur</string>
+    <string name="toast_invalid_host">Host invalide</string>
+    <string name="toast_invalid_port">Port invalide</string>
 </resources>

@@ -2,8 +2,8 @@ package com.example.android.distributeurdeau;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,8 +25,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = getSharedPreferences(
                 Strings.NETWORK_SETTINGS, Context.MODE_PRIVATE);
-        String host = sharedPref.getString("host", "");
-        String port = sharedPref.getString("port", "");
+        String host = sharedPref.getString("host", "localhost");
+        String port = sharedPref.getString("port", "3000");
 
         hostET = findViewById(R.id.hostET);
         portET = findViewById(R.id.portET);
@@ -42,30 +42,32 @@ public class SettingsActivity extends AppCompatActivity {
                 SharedPreferences sharedPref = context.getSharedPreferences(
                         Strings.NETWORK_SETTINGS, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                String host =  hostET.getText().toString();
+                String host = hostET.getText().toString();
                 String port = portET.getText().toString();
                 if (!(new FormatValidator()).validateHost(host)) {
-                    Toast.makeText(context, "Invalid host", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.toast_invalid_host), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (!(new FormatValidator()).validatePort(port)) {
-                    Toast.makeText(context, "Invalid port", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getString(R.string.toast_invalid_port), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 editor.putString("host", host);
                 editor.putString("port", port);
                 editor.apply();
 
-                Toast.makeText(context, "Confirmé", Toast.LENGTH_SHORT).show();
+                Toast.makeText(
+                        context,
+                        getString(R.string.toast_modifications_saved),
+                        Toast.LENGTH_SHORT
+                ).show();
+
                 finish();
             }
         });
     }
 
     class FormatValidator {
-
-        private Pattern pattern;
-        private Matcher matcher;
 
         private static final String HOST_PATTERN =
                 "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
@@ -75,14 +77,16 @@ public class SettingsActivity extends AppCompatActivity {
         private static final String PORT_PATTERN =
                 "^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]" +
                         "{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$";
+        private Pattern pattern;
+        private Matcher matcher;
 
-        public boolean validateHost(final String host){
+        public boolean validateHost(final String host) {
             pattern = Pattern.compile(HOST_PATTERN);
             matcher = pattern.matcher(host);
             return matcher.matches();
         }
 
-        public boolean validatePort(final String port){
+        public boolean validatePort(final String port) {
             pattern = Pattern.compile(PORT_PATTERN);
             matcher = pattern.matcher(port);
             return matcher.matches();

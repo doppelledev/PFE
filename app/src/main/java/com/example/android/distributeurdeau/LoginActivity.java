@@ -138,21 +138,27 @@ public class LoginActivity extends AppCompatActivity {
             if (action == null)
                 return;
 
-            if (action.equals(Strings.ACTION_LOGIN_SUCCEEDED)) {
-                // if login succeeded, deploy the farmer agent
-                Log.d(TAG, "onReceive: login succeeded");
-                Farmer farmer = (Farmer) intent.getSerializableExtra("farmer");
-                new DeployFarmer().execute(getApplicationContext(), farmer);
-            } else if (action.equals(Strings.ACTION_LOGIN_FAILED)) {
-                failed();
-            } else if (action.equals(Strings.ACTION_LAUNCH_FARMER)) {
-                // launch the farmer activity
-                // This is triggered by the deployed farmer agent
-                Farmer farmer = (Farmer) intent.getSerializableExtra(Strings.EXTRA_FARMER);
-                Intent farmerIntent = new Intent(LoginActivity.this, FarmerActivity.class);
-                farmerIntent.putExtra(Strings.EXTRA_FARMER, farmer);
-                farmerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(farmerIntent);
+            switch (action) {
+                case Strings.ACTION_LOGIN_SUCCEEDED: {
+                    // if login succeeded, deploy the farmer agent
+                    Log.d(TAG, "onReceive: login succeeded");
+                    Farmer farmer = (Farmer) intent.getSerializableExtra("farmer");
+                    new DeployFarmer().execute(getApplicationContext(), farmer);
+                    break;
+                }
+                case Strings.ACTION_LOGIN_FAILED:
+                    failed();
+                    break;
+                case Strings.ACTION_LAUNCH_FARMER: {
+                    // launch the farmer activity
+                    // This is triggered by the deployed farmer agent
+                    Farmer farmer = (Farmer) intent.getSerializableExtra(Strings.EXTRA_FARMER);
+                    Intent farmerIntent = new Intent(LoginActivity.this, FarmerActivity.class);
+                    farmerIntent.putExtra(Strings.EXTRA_FARMER, farmer);
+                    farmerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(farmerIntent);
+                    break;
+                }
             }
         }
     }
