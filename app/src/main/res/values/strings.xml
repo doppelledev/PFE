@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Distributeur d\'eau</string>
+    <string name="app_name">Test</string>
     <string name="login">Se connecter</string>
     <string name="plots">Parcelles</string>
     <string name="settings">Paramètres</string>
