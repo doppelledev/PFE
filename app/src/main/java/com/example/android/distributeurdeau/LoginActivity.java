@@ -1,21 +1,13 @@
 package com.example.android.distributeurdeau;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.format.Formatter;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,15 +17,9 @@ import android.widget.Toast;
 
 import com.example.android.distributeurdeau.models.Farmer;
 
-import jade.android.AndroidHelper;
 import jade.android.MicroRuntimeService;
-import jade.android.MicroRuntimeServiceBinder;
-import jade.android.RuntimeCallback;
 import jade.core.MicroRuntime;
 import jade.core.NotFoundException;
-import jade.core.Profile;
-import jade.util.leap.Properties;
-import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 
 public class LoginActivity extends AppCompatActivity {
@@ -41,9 +27,6 @@ public class LoginActivity extends AppCompatActivity {
     public static final String START_FARMER_ACTIVITY = "start-farmer-activity";
     public static final String LOGIN_FAILED = "login failed";
     public static final String LOGIN_SUCCEEDED = "login succeeded";
-
-    private MicroRuntimeServiceBinder microRuntimeServiceBinder;
-    private ServiceConnection serviceConnection;
 
     private LoginInterface loginInterface;
     private Receiver receiver;
@@ -155,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onDestroy() {
         Log.d(TAG, "onDestroy: destroying");
         try {
-            MicroRuntime.killAgent(MainActivity.NICK_NAME);
+            MicroRuntime.killAgent(MainActivity.INITIAL_AGENT_NAME);
         } catch (NotFoundException e) {
             e.printStackTrace();
         }

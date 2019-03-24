@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Distributeur d\'eau</string>
+    <string name="start">commencer</string>
+    <string name="retry">réessayer</string>
+
+    <string name="toast_launch_failed">Impossible de lancer le service</string>
 </resources>

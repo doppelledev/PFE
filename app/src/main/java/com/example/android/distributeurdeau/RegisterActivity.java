@@ -40,7 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
         setTitle("S'inscrire");
 
         try {
-            loginInterface = MicroRuntime.getAgent(MainActivity.NICK_NAME)
+            loginInterface = MicroRuntime.getAgent(MainActivity.INITIAL_AGENT_NAME)
                             .getO2AInterface(LoginInterface.class);
         } catch (ControllerException e) {
             e.printStackTrace();

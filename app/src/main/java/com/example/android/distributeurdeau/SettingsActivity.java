@@ -24,7 +24,7 @@ public class SettingsActivity extends AppCompatActivity {
         setTitle("Paramètres");
 
         SharedPreferences sharedPref = getSharedPreferences(
-                "networkSettings", Context.MODE_PRIVATE);
+                Strings.NETWORK_SETTINGS, Context.MODE_PRIVATE);
         String host = sharedPref.getString("host", "");
         String port = sharedPref.getString("port", "");
 
@@ -40,7 +40,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Context context = SettingsActivity.this;
                 SharedPreferences sharedPref = context.getSharedPreferences(
-                        "networkSettings", Context.MODE_PRIVATE);
+                        Strings.NETWORK_SETTINGS, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 String host =  hostET.getText().toString();
                 String port = portET.getText().toString();

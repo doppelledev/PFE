@@ -55,7 +55,7 @@ public class InitialAgent extends Agent implements LoginInterface {
         registerO2AInterface(LoginInterface.class, this);
         Log.d(TAG, "setup: O2A: " + getO2AInterface(LoginInterface.class));
         Intent broadcast = new Intent();
-        broadcast.setAction(MainActivity.LOGIN);
+        broadcast.setAction(Strings.ACTION_SHOW_LOGIN);
         context.sendBroadcast(broadcast);
 
         final MessageTemplate template = MessageTemplate.and(

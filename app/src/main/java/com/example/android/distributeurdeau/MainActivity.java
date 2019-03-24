@@ -33,18 +33,17 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String LOGIN = "login";
 
     private static final String TAG = "MainActivity";
-    public static final String NICK_NAME = "Initial Agent";
+    public static final String INITIAL_AGENT_NAME = "Initial Agent";
     public static MicroRuntimeServiceBinder microRuntimeServiceBinder;
     public static ServiceConnection serviceConnection;
-    private Receiver receiver;
+    public static boolean containerStarted = false;
 
+    private Receiver receiver;
     private Button mainB;
     private TextView mainTV;
     private ProgressBar mainPB;
-    public static boolean b = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         receiver = new Receiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(LOGIN);
+        filter.addAction(Strings.ACTION_SHOW_LOGIN);
         registerReceiver(receiver, filter);
 
         mainTV = findViewById(R.id.mainTV);
@@ -85,17 +84,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void reset() {
-        mainB.setText("commencer");
+        // reset the ui when user comes back to the activity
+        mainB.setText(getString(R.string.start));
         mainB.setVisibility(View.VISIBLE);
         mainPB.setVisibility(View.GONE);
         try {
-            MicroRuntime.killAgent(NICK_NAME);
+            MicroRuntime.killAgent(INITIAL_AGENT_NAME);
         } catch (NotFoundException e) {
             e.printStackTrace();
         }
     }
 
     private void start() {
+        // handle UI changes when trying to connect
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -108,24 +109,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void failed() {
+        // handle UI changes if the connection failed
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mainB.setText("réessayer");
+                mainB.setText(getString(R.string.retry));
                 mainB.setVisibility(View.VISIBLE);
                 mainPB.setVisibility(View.GONE);
                 mainTV.setVisibility(View.VISIBLE);
-                Toast.makeText(MainActivity.this, "Impossible de lancer le service", Toast.LENGTH_SHORT).show();
+                Toast.makeText(
+                        MainActivity.this,
+                        getString(R.string.toast_launch_failed),
+                        Toast.LENGTH_SHORT
+                ).show();
             }
         });
     }
 
     private void initiateService() {
+        // get host and port from shared preferences
         SharedPreferences sharedPref = getSharedPreferences(
-                "networkSettings", Context.MODE_PRIVATE);
-        String host = sharedPref.getString("host", "localhost");
-        String port = sharedPref.getString("port", "3000");
+                Strings.NETWORK_SETTINGS,
+                Context.MODE_PRIVATE);
+        final String host = sharedPref.getString("host", "localhost");
+        final String port = sharedPref.getString("port", "3000");
 
+        // set the profile used to create the container
         final Properties profile = new Properties();
         profile.setProperty(Profile.MAIN_HOST, host);
         profile.setProperty(Profile.MAIN_PORT, port);
@@ -146,13 +155,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (microRuntimeServiceBinder == null) {
             serviceConnection = new ServiceConnection() {
-                public void onServiceConnected(ComponentName className,
-                                               IBinder service) {
+                public void onServiceConnected(ComponentName className, IBinder service) {
                     microRuntimeServiceBinder = (MicroRuntimeServiceBinder) service;
                     Log.d(TAG, "initiateService(): Gateway successfully bound to MicroRuntimeService");
-                    if (b) {
+                    if (!containerStarted) {
                         startContainer(profile);
-                        b = false;
+                        containerStarted = true;
                     }
                 }
 
@@ -162,11 +170,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
             Log.d(TAG, "initiateService(): Binding Gateway to MicroRuntimeService...");
-            bindService(new Intent(getApplicationContext(), MicroRuntimeService.class),
+            bindService(
+                    new Intent(getApplicationContext(), MicroRuntimeService.class),
                     serviceConnection,
                     Context.BIND_AUTO_CREATE);
         } else {
-            Log.d(TAG, "initiateService(): MicroRumtimeGateway already binded to service");
+            Log.d(TAG, "initiateService(): MicroRuntimeGateway already bound to service");
             startContainer(profile);
         }
     }
@@ -178,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void thisIsNull) {
                             Log.d(TAG, "startContainer(): Successfully start of the container...");
-                            startAgent(NICK_NAME);
+                            startAgent();
                         }
 
                         @Override
@@ -190,23 +199,21 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            startAgent(NICK_NAME);
+            startAgent();
         }
     }
 
-    private void startAgent(final String nickname) {
+    private void startAgent() {
         microRuntimeServiceBinder.startAgent(
-                nickname,
+                INITIAL_AGENT_NAME,
                 InitialAgent.class.getName(),
                 new Object[] { getApplicationContext() },
                 new RuntimeCallback<Void>() {
                     @Override
                     public void onSuccess(Void thisIsNull) {
-                        Log.d(TAG, "startAgent(): Successfully start of the"
-                                + InitialAgent.class.getName() + "...");
+                        Log.d(TAG, "startAgent(): Successfully started the Initial Agent");
                         try {
-                            agentStartupCallback.onSuccess(MicroRuntime
-                                    .getAgent(nickname));
+                            agentStartupCallback.onSuccess(MicroRuntime.getAgent(INITIAL_AGENT_NAME));
                         } catch (ControllerException e) {
                             // Should never happen
                             Log.d(TAG, "This should never happen: " + e.getMessage());
@@ -215,26 +222,12 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Throwable throwable) {
-                        Log.d(TAG, "onFailure: Failed to start the"
-                                + InitialAgent.class.getName() + "...");
+                        Log.d(TAG, "onFailure: Failed to start the Initial Agent");
                         failed();
                     }
                 });
     }
 
-    private class Receiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            Log.d(TAG, "onReceive: " + action);
-            if (action.equals(LOGIN)) {
-                Log.d(TAG, "onReceive: starting LoginActicity");
-                Intent showLogin = new Intent(MainActivity.this, LoginActivity.class);
-                showLogin.putExtra("nickname", NICK_NAME);
-                startActivity(showLogin);
-            }
-        }
-    }
     private RuntimeCallback<AgentController> agentStartupCallback = new RuntimeCallback<AgentController>() {
         @Override
         public void onSuccess(AgentController agent) {
@@ -246,6 +239,19 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "onFailure: name already in use");
         }
     };
+
+    private class Receiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            Log.d(TAG, "onReceive: " + action);
+            if (action != null && action.equals(Strings.ACTION_SHOW_LOGIN)) {
+                Intent showLogin = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(showLogin);
+            }
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -263,13 +269,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
-
-    @Override
-    protected void onStop() {
-
-        super.onStop();
-    }
-
 
     @Override
     protected void onDestroy() {
