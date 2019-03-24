@@ -24,34 +24,42 @@ import jade.wrapper.ControllerException;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
-    public static final String START_FARMER_ACTIVITY = "start-farmer-activity";
-    public static final String LOGIN_FAILED = "login failed";
-    public static final String LOGIN_SUCCEEDED = "login succeeded";
 
     private LoginInterface loginInterface;
     private Receiver receiver;
     private ProgressBar loginPB;
     private EditText loginET;
     private EditText passET;
-    private TextView registerTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        setupViews();
+
         try {
-            loginInterface = MicroRuntime.getAgent("Initial Agent")
+            loginInterface = MicroRuntime.getAgent(MainActivity.INITIAL_AGENT_NAME)
                     .getO2AInterface(LoginInterface.class);
-            Log.d(TAG, "onCreate: interface: " + loginInterface);
         } catch (ControllerException e) {
             e.printStackTrace();
         }
+        Log.d(TAG, "onCreate: interface: " + loginInterface);
 
-        loginET = findViewById(R.id.loginET);
-        passET = findViewById(R.id.passET);
+        receiver = new Receiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Strings.ACTION_LOGIN_FAILED);
+        filter.addAction(Strings.ACTION_LOGIN_SUCCEEDED);
+        filter.addAction(Strings.ACTION_LAUNCH_FARMER);
+        registerReceiver(receiver, filter);
 
-        final Button loginB = findViewById(R.id.loginB);
+        bindService(new Intent(getApplicationContext(), MicroRuntimeService.class),
+                MainActivity.serviceConnection,
+                Context.BIND_AUTO_CREATE);
+    }
+
+    private void setupViews() {
+        Button loginB = findViewById(R.id.loginB);
         loginB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,10 +71,11 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        loginET = findViewById(R.id.loginET);
+        passET = findViewById(R.id.passET);
         loginPB = findViewById(R.id.loginPB);
         loginPB.setVisibility(View.GONE);
-
-        registerTV = findViewById(R.id.registerTV);
+        TextView registerTV = findViewById(R.id.registerTV);
         registerTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,23 +84,17 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        receiver = new Receiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(LOGIN_FAILED);
-        filter.addAction(LOGIN_SUCCEEDED);
-        filter.addAction(START_FARMER_ACTIVITY);
-        registerReceiver(receiver, filter);
-
-        bindService(new Intent(getApplicationContext(), MicroRuntimeService.class),
-                MainActivity.serviceConnection,
-                Context.BIND_AUTO_CREATE);
     }
 
 
     private void failed() {
+        // handle UI when login fails
         loginPB.setVisibility(View.GONE);
-        Toast.makeText(LoginActivity.this, "Connexion échoué", Toast.LENGTH_SHORT).show();
+        Toast.makeText(
+                LoginActivity.this,
+                getString(R.string.toast_login_failed),
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     private class Receiver extends BroadcastReceiver {
@@ -100,28 +103,35 @@ public class LoginActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "onReceive: " + intent.getAction());
             final String action = intent.getAction();
-            if (action.equals(LOGIN_SUCCEEDED)) {
+            if (action == null)
+                return;
+
+            if (action.equals(Strings.ACTION_LOGIN_SUCCEEDED)) {
+                // if login succeeded, deploy the farmer agent
                 Log.d(TAG, "onReceive: login succeeded");
                 Farmer farmer = (Farmer) intent.getSerializableExtra("farmer");
                 new DeployFarmer().execute(getApplicationContext(), farmer);
-            } else if (action.equals(LOGIN_FAILED)) {
+            }
+            else if (action.equals(Strings.ACTION_LOGIN_FAILED)) {
                 failed();
-            }  else if (action.equals(START_FARMER_ACTIVITY)) {
-                Farmer farmer = (Farmer) intent.getSerializableExtra("farmer");
+            }
+            else if (action.equals(Strings.ACTION_LAUNCH_FARMER)) {
+                // launch the farmer activity
+                // This is triggered by the deployed farmer agent
+                Farmer farmer = (Farmer) intent.getSerializableExtra(Strings.EXTRA_FARMER);
                 Intent farmerIntent = new Intent(LoginActivity.this, FarmerActivity.class);
-                farmerIntent.putExtra("farmer", farmer);
+                farmerIntent.putExtra(Strings.EXTRA_FARMER, farmer);
                 farmerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(farmerIntent);
             }
-            Log.d(TAG, "onReceive: " + intent.getAction());
         }
     }
 
-    private class DeployFarmer extends AsyncTask<Object, Void, Void> {
+    // This class takes care of deploying the FarmerAgent in a background thread
+    private static class DeployFarmer extends AsyncTask<Object, Void, Void> {
         @Override
         protected Void doInBackground(Object... args) {
             try {
-                Log.d(TAG, "doInBackground: " + args[1]);
                 MicroRuntime.startAgent(
                         ((Farmer) args[1]).getFarmer_num(),
                         FarmerAgent.class.getName(),
@@ -136,6 +146,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        // kill the initial agent and dispose of the service and the receiver
         Log.d(TAG, "onDestroy: destroying");
         try {
             MicroRuntime.killAgent(MainActivity.INITIAL_AGENT_NAME);

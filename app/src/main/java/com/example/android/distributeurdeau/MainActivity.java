@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         receiver = new Receiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Strings.ACTION_SHOW_LOGIN);
+        filter.addAction(Strings.ACTION_LAUNCH_LOGIN);
         registerReceiver(receiver, filter);
 
         mainTV = findViewById(R.id.mainTV);
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             Log.d(TAG, "onReceive: " + action);
-            if (action != null && action.equals(Strings.ACTION_SHOW_LOGIN)) {
+            if (action != null && action.equals(Strings.ACTION_LAUNCH_LOGIN)) {
                 Intent showLogin = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(showLogin);
             }
