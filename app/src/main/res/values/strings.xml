@@ -6,6 +6,26 @@
     <string name="start">commencer</string>
     <string name="retry">réessayer</string>
     <string name="empty">Vide</string>
+    <string name="logout">Se déconnecter</string>
+    <string name="close">Fermer</string>
+    <string name="host">Host</string>
+    <string name="host_example">Ex: 192.168.1.5</string>
+    <string name="port">Port</string>
+    <string name="example_port">Ex: 3000</string>
+    <string name="confirm">Confirmer</string>
+    <string name="connect">Connexion</string>
+    <string name="save">enregistrer</string>
+    <string name="send">Envoyer</string>
+    <string name="water_qte">Quantité d\'eau demandé</string>
+    <string name="type">Type de culture</string>
+    <string name="plot">Parcelle</string>
+    <string name="area">Superficie</string>
+    <string name="sowing_date">Date de semis</string>
+    <string name="need">Besoin</string>
+    <string name="yield">Rendement</string>
+    <string name="profit">Profit</string>
+    <string name="estimate">Estimation</string>
+    <string name="modify">modifier</string>
 
     <string name="toast_launch_failed">Impossible de lancer le service</string>
     <string name="toast_login_failed">"Connexion échouée"</string>
@@ -23,4 +43,11 @@
     <string name="toast_invalid_pass">Mot de passe invalide</string>
     <string name="toast_account_created">Compte crée</string>
     <string name="toast_no_plot">Aucune parcelle n\'a été sélectionnée</string>
+    <string name="farmer_num">Numéro d\'agriculteur</string>
+    <string name="confirm_password">Confirmer le mot de passe</string>
+    <string name="first_name">Prénom</string>
+    <string name="last_name">Nom</string>
+    <string name="password">mot de passe</string>
+    <string name="take_risk">Je prends le risque</string>
+    <string name="network_error">Erreur de connexion</string>
 </resources>

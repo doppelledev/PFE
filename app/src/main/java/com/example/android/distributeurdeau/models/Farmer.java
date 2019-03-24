@@ -1,8 +1,8 @@
 package com.example.android.distributeurdeau.models;
 
-import jade.util.leap.Serializable;
-
 import java.util.Vector;
+
+import jade.util.leap.Serializable;
 
 public class Farmer implements Serializable {
     private static final long serialVersionUID = 4L;

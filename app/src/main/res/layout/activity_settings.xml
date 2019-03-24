@@ -12,9 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="Host"
-        android:textSize="18sp"
+        android:text="@string/host"
         android:textColor="@color/colorPrimary"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:ems="10"
-        android:hint="Ex: 192.168.1.5"
+        android:hint="@string/host_example"
         android:inputType="textPersonName"
         android:textColorHint="@color/hintTextColor"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,9 +36,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Port"
-        android:textSize="18sp"
+        android:text="@string/port"
         android:textColor="@color/colorPrimary"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/hostET" />
 
@@ -48,9 +48,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:ems="10"
-        android:hint="Ex: 3000"
-        android:textColorHint="@color/hintTextColor"
+        android:hint="@string/example_port"
         android:inputType="textPersonName"
+        android:textColorHint="@color/hintTextColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
@@ -64,7 +64,7 @@
         android:background="@drawable/round_border_green1"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:text="Confirmer"
+        android:text="@string/confirm"
         android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

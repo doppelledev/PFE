@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FarmerActivity">
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -18,7 +18,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/round_bg_green1"
-            android:text="enregistrer"
+            android:text="@string/save"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -33,7 +33,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/round_bg_green1"
-            android:text="Envoyer"
+            android:text="@string/send"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -42,12 +42,12 @@
 
         <TextView
             android:id="@+id/textView9"
+            style="@style/LabelTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="20dp"
-            android:text="Quantité d'eau demandé"
-            style="@style/LabelTextStyle"
+            android:text="@string/water_qte"
             app:layout_constraintBottom_toBottomOf="@+id/qteET"
             app:layout_constraintEnd_toStartOf="@+id/qteET"
             app:layout_constraintHorizontal_bias="0.55"
@@ -66,21 +66,21 @@
 
         <TextView
             android:id="@+id/textView2"
+            style="@style/LabelTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Type de culture"
-            style="@style/LabelTextStyle"
+            android:text="@string/type"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/plotS" />
 
         <Spinner
             android:id="@+id/plotS"
+            style="@android:style/Widget.Holo.Light.Spinner"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            style="@android:style/Widget.Holo.Light.Spinner"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -91,18 +91,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Parcelle"
+            android:text="@string/plot"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView3"
+            style="@style/LabelTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Superficie"
-            style="@style/LabelTextStyle"
+            android:text="@string/area"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/typeET" />
 
@@ -118,12 +118,12 @@
 
         <TextView
             android:id="@+id/textView4"
+            style="@style/LabelTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Date de semis"
-            style="@style/LabelTextStyle"
+            android:text="@string/sowing_date"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/areaET" />
 
@@ -134,7 +134,6 @@
             android:layout_marginStart="16dp"
             android:layout_marginBottom="8dp"
             android:ems="10"
-            android:inputType="date"
             android:textColor="@android:color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/editB"
@@ -176,16 +175,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Besoin" />
+                    android:text="@string/need" />
 
                 <TextView
                     android:id="@+id/besoinTV"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="200L"
+                    android:text="..."
                     android:textColor="@android:color/black"
-                    android:textSize="16dp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -199,16 +198,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Rendement" />
+                    android:text="@string/yield" />
 
                 <TextView
                     android:id="@+id/rendementTV"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="500T"
+                    android:text="..."
                     android:textColor="@android:color/black"
-                    android:textSize="16dp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -222,16 +221,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Profit" />
+                    android:text="@string/profit" />
 
                 <TextView
                     android:id="@+id/profitTV"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="200.000 DH"
+                    android:text="..."
                     android:textColor="@android:color/black"
-                    android:textSize="16dp" />
+                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -243,7 +242,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:text="Estimation"
+            android:text="@string/estimate"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/qteET" />
@@ -253,7 +252,7 @@
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:background="@drawable/round_border_green1"
-            android:text="modifier"
+            android:text="@string/modify"
             app:layout_constraintStart_toEndOf="@+id/dateTV"
             app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
