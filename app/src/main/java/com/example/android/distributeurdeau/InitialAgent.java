@@ -81,12 +81,12 @@ public class InitialAgent extends Agent implements LoginInterface {
                         }
                         Log.d(TAG, "action: farmer" + f);
                         Intent intent = new Intent();
-                        intent.setAction(LoginActivity.LOGIN_SUCCEEDED);
+                        intent.setAction(Strings.ACTION_LOGIN_SUCCEEDED);
                         intent.putExtra("farmer", f);
                         context.sendBroadcast(intent);
                     } else {
                         Intent intent = new Intent();
-                        intent.setAction(LoginActivity.LOGIN_FAILED);
+                        intent.setAction(Strings.ACTION_LOGIN_FAILED);
                         context.sendBroadcast(intent);
                     }
                 } else {

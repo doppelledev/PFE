@@ -37,7 +37,7 @@ public class FarmerAgent extends Agent implements FarmerInterface{
         Log.d(TAG, "setup: *icro running? " + MicroRuntime.isRunning());
         Log.d(TAG, "setup: sending broadcats");
         Intent broadcast = new Intent();
-        broadcast.setAction(LoginActivity.START_FARMER_ACTIVITY);
+        broadcast.setAction(Strings.ACTION_LAUNCH_FARMER);
         broadcast.putExtra("farmer", farmer);
         context.sendBroadcast(broadcast);
 
