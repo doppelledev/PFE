@@ -79,7 +79,7 @@ public class InitialAgent extends Agent implements LoginInterface {
                         } catch (UnreadableException e) {
                             e.printStackTrace();
                         }
-                        Log.d(TAG, "action: " + f);
+                        Log.d(TAG, "action: farmer" + f);
                         Intent intent = new Intent();
                         intent.setAction(LoginActivity.LOGIN_SUCCEEDED);
                         intent.putExtra("farmer", f);

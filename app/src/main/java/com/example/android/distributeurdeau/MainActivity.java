@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     public static final String NICK_NAME = "Initial Agent";
-    MicroRuntimeServiceBinder microRuntimeServiceBinder;
+    public static MicroRuntimeServiceBinder microRuntimeServiceBinder;
     public static ServiceConnection serviceConnection;
     private Receiver receiver;
 
@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        serviceConnection = null;
         microRuntimeServiceBinder = null;
 
         receiver = new Receiver();
@@ -121,11 +120,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void success() {
-        mainB.setText("réessayer");
-        Toast.makeText(this, "Impossible de se connecter", Toast.LENGTH_SHORT).show();
-    }
-
     private void initiateService() {
         SharedPreferences sharedPref = getSharedPreferences(
                 "networkSettings", Context.MODE_PRIVATE);
@@ -155,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onServiceConnected(ComponentName className,
                                                IBinder service) {
                     microRuntimeServiceBinder = (MicroRuntimeServiceBinder) service;
-                    Log.d(TAG, "startChat(): Gateway successfully bound to MicroRuntimeService");
+                    Log.d(TAG, "initiateService(): Gateway successfully bound to MicroRuntimeService");
                     if (b) {
                         startContainer(profile);
                         b = false;
@@ -164,15 +158,15 @@ public class MainActivity extends AppCompatActivity {
 
                 public void onServiceDisconnected(ComponentName className) {
                     microRuntimeServiceBinder = null;
-                    Log.d(TAG, "startChat(): Gateway unbound from MicroRuntimeService");
+                    Log.d(TAG, "initiateService(): Gateway unbound from MicroRuntimeService");
                 }
             };
-            Log.d(TAG, "startChat(): Binding Gateway to MicroRuntimeService...");
+            Log.d(TAG, "initiateService(): Binding Gateway to MicroRuntimeService...");
             bindService(new Intent(getApplicationContext(), MicroRuntimeService.class),
                     serviceConnection,
                     Context.BIND_AUTO_CREATE);
         } else {
-            Log.d(TAG, "startChat(): MicroRumtimeGateway already binded to service");
+            Log.d(TAG, "initiateService(): MicroRumtimeGateway already binded to service");
             startContainer(profile);
         }
     }
@@ -279,11 +273,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        try {
-            MicroRuntime.killAgent(NICK_NAME);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        }
+        Log.d(TAG, "onDestroy: destroying");
         unbindService(serviceConnection);
         unregisterReceiver(receiver);
         super.onDestroy();

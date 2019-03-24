@@ -6,15 +6,18 @@ import android.util.Log;
 
 import com.example.android.distributeurdeau.models.Database;
 import com.example.android.distributeurdeau.models.Farmer;
+import com.example.android.distributeurdeau.models.Plot;
 
-import jade.android.MicroRuntimeService;
+import java.io.IOException;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.MicroRuntime;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
-public class FarmerAgent extends Agent implements LoginInterface{
+public class FarmerAgent extends Agent implements FarmerInterface{
     private static final String TAG = "FarmerAgent";
 
     private Context context;
@@ -38,13 +41,29 @@ public class FarmerAgent extends Agent implements LoginInterface{
         broadcast.putExtra("farmer", farmer);
         context.sendBroadcast(broadcast);
 
-        registerO2AInterface(LoginInterface.class, this);
+        registerO2AInterface(FarmerInterface.class, this);
+
+        final MessageTemplate template = MessageTemplate.and(
+                MessageTemplate.or(
+                        MessageTemplate.MatchPerformative(ACLMessage.FAILURE),
+                        MessageTemplate.MatchPerformative(ACLMessage.CONFIRM)
+                ),
+                MessageTemplate.MatchOntology("plot-modification")
+        );
         addBehaviour(new CyclicBehaviour() {
             @Override
             public void action() {
-                ACLMessage m = receive();
-                if (m != null) {
-                    Log.d(TAG, "action: received" + m.getContent());
+                ACLMessage message = receive(template);
+                if (message != null) {
+                    if (message.getPerformative() == ACLMessage.CONFIRM) {
+                        Intent broadcast = new Intent();
+                        broadcast.setAction("success");
+                        context.sendBroadcast(broadcast);
+                    } else if (message.getPerformative() == ACLMessage.FAILURE) {
+                        Intent broadcast = new Intent();
+                        broadcast.setAction("success");
+                        context.sendBroadcast(broadcast);
+                    }
                 } else {
                     block();
                 }
@@ -53,18 +72,15 @@ public class FarmerAgent extends Agent implements LoginInterface{
     }
 
     @Override
-    public void authenticate(String numAgr, String pass) {
-        Log.d(TAG, "authenticate: sending msg");
+    public void modifyPlot(Plot plot) {
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-        message.setOntology("authentication");
         message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
-        message.addUserDefinedParameter(Database.farmer_num, numAgr);
-        message.addUserDefinedParameter(Database.password, pass);
+        message.setOntology("plot-modification");
+        try {
+            message.setContentObject(plot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         send(message);
-    }
-
-    @Override
-    public void register(Farmer farmer) {
-
     }
 }

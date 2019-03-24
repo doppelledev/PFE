@@ -1,8 +1,11 @@
 package com.example.android.distributeurdeau.models;
+import java.sql.Date;
 
-import java.util.Date;
+import jade.util.leap.Serializable;
 
-public class Plot {
+public class Plot implements Serializable {
+    private static final long serialVersionUID = 3L;
+
     private Farmer farmer;
     private String p_name;
     private float area;
@@ -64,5 +67,17 @@ public class Plot {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "Plot{" +
+                "farmer=" + farmer.getFarmer_num() +
+                ", p_name='" + p_name + '\'' +
+                ", area=" + area +
+                ", water_qte=" + water_qte +
+                ", s_date=" + s_date +
+                ", type='" + type + '\'' +
+                '}';
     }
 }

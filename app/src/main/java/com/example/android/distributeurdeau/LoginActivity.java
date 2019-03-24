@@ -138,6 +138,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Object... args) {
             try {
+                Log.d(TAG, "doInBackground: " + args[1]);
                 MicroRuntime.startAgent(
                         ((Farmer) args[1]).getFarmer_num(),
                         FarmerAgent.class.getName(),
@@ -149,71 +150,6 @@ public class LoginActivity extends AppCompatActivity {
             return null;
         }
     }
-
-
-    private void startFarmerService(final Farmer farmer) {
-        if (microRuntimeServiceBinder == null) {
-            serviceConnection = new ServiceConnection() {
-                public void onServiceConnected(ComponentName className,
-                                               IBinder service) {
-                    microRuntimeServiceBinder = (MicroRuntimeServiceBinder) service;
-                    Log.d(TAG, "startChat(): Gateway successfully bound to MicroRuntimeService");
-                    startAgent(farmer);
-                }
-
-                public void onServiceDisconnected(ComponentName className) {
-                    microRuntimeServiceBinder = null;
-                    Log.d(TAG, "startChat(): Gateway unbound from MicroRuntimeService");
-                }
-            };
-            Log.d(TAG, "startChat(): Binding Gateway to MicroRuntimeService...");
-            bindService(new Intent(getApplicationContext(), MicroRuntimeService.class),
-                    serviceConnection,
-                    Context.BIND_AUTO_CREATE);
-        } else {
-            Log.d(TAG, "startChat(): MicroRumtimeGateway already binded to service");
-            startAgent(farmer);
-        }
-    }
-    private void startAgent(final Farmer farmer) {
-        microRuntimeServiceBinder.startAgent(
-                farmer.getFarmer_num(),
-                FarmerAgent.class.getName(),
-                new Object[] { getApplicationContext(), farmer },
-                new RuntimeCallback<Void>() {
-                    @Override
-                    public void onSuccess(Void thisIsNull) {
-                        Log.d(TAG, "startAgent(): Successfully start of the"
-                                + FarmerAgent.class.getName() + "...");
-                        try {
-                            agentStartupCallback.onSuccess(MicroRuntime
-                                    .getAgent(farmer.getFarmer_num()));
-                        } catch (ControllerException e) {
-                            // Should never happen
-                            Log.d(TAG, "This should never happen: " + e.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.d(TAG, "onFailure: Failed to start the"
-                                + FarmerAgent.class.getName() + "...");
-                        failed();
-                    }
-                });
-    }
-    private RuntimeCallback<AgentController> agentStartupCallback = new RuntimeCallback<AgentController>() {
-
-        @Override
-        public void onSuccess(AgentController agent) {
-
-        }
-
-        @Override
-        public void onFailure(Throwable throwable) {
-            Log.d(TAG, "onFailure: name already in use");
-        }
-    };
 
     @Override
     protected void onDestroy() {
