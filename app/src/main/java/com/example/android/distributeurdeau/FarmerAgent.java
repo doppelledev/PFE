@@ -15,7 +15,7 @@ import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
-public class FarmerAgent extends Agent implements FarmerInterface{
+public class FarmerAgent extends Agent implements FarmerInterface {
     private static final String TAG = "FarmerAgent";
 
     private Context context;
@@ -23,7 +23,7 @@ public class FarmerAgent extends Agent implements FarmerInterface{
 
     @Override
     protected void setup() {
-        Object [] args = getArguments();
+        Object[] args = getArguments();
         if (args != null && args.length >= 2) {
             context = (Context) getArguments()[0];
             farmer = (Farmer) getArguments()[1];
@@ -34,7 +34,7 @@ public class FarmerAgent extends Agent implements FarmerInterface{
 
         Intent broadcast = new Intent();
         broadcast.setAction(Strings.ACTION_LAUNCH_FARMER);
-        broadcast.putExtra("farmer", farmer);
+        broadcast.putExtra(Strings.EXTRA_FARMER, farmer);
         context.sendBroadcast(broadcast);
 
         // Activate GUI
@@ -42,6 +42,20 @@ public class FarmerAgent extends Agent implements FarmerInterface{
 
         // Ad behaviour
         addBehaviour(new ModificationBehaviour());
+    }
+
+    @Override
+    public void modifyPlot(Plot plot) {
+        // send a request to the server to modify the plot
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
+        message.setOntology(Strings.ONTOLOGY_MDF);
+        try {
+            message.setContentObject(plot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        send(message);
     }
 
     private class ModificationBehaviour extends CyclicBehaviour {
@@ -62,19 +76,5 @@ public class FarmerAgent extends Agent implements FarmerInterface{
                 block();
             }
         }
-    }
-
-    @Override
-    public void modifyPlot(Plot plot) {
-        // send a request to the server to modify the plot
-        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
-        message.setOntology(Strings.ONTOLOGY_MDF);
-        try {
-            message.setContentObject(plot);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        send(message);
     }
 }
