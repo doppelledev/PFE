@@ -14,7 +14,7 @@ public class Farmer implements Serializable {
     private boolean risk;
     private Vector<Plot> plots = new Vector<>();
 
-    public Farmer(String f_name, String l_name, String farmer_num, String password, boolean risk) {
+    public Farmer(String farmer_num, String f_name, String l_name, String password, boolean risk) {
         this.f_name = f_name;
         this.l_name = l_name;
         this.farmer_num = farmer_num;

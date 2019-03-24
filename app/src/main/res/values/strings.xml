@@ -16,4 +16,11 @@
     <string name="toast_error">Erreur</string>
     <string name="toast_invalid_host">Host invalide</string>
     <string name="toast_invalid_port">Port invalide</string>
+    <string name="register">S\'inscrire</string>
+    <string name="toast_invalid_fname">Prénom invalide</string>
+    <string name="toast_invalid_lname">Nom invalide</string>
+    <string name="toast_invalid_number">Numéro d\'agriculteur invalid</string>
+    <string name="toast_invalid_pass">Mot de passe invalide</string>
+    <string name="toast_account_created">Compte crée</string>
+    <string name="toast_no_plot">Aucune parcelle n\'a été sélectionnée</string>
 </resources>

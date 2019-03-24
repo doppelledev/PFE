@@ -159,6 +159,8 @@ public class FarmerActivity extends AppCompatActivity {
 
     private void refreshFields(int index) {
         // show plot data when the user selects it from the spinner
+        if (farmer.getPlots().size() == 0)
+            return;
         final Plot plot = farmer.getPlots().get(index);
         typeET.setText(plot.getType());
         areaET.setText(String.valueOf(plot.getArea()));
@@ -189,6 +191,10 @@ public class FarmerActivity extends AppCompatActivity {
     }
 
     private void attemptToSave() {
+        if (farmer.getPlots().size() == 0) {
+            invalid(getString(R.string.toast_no_plot));
+            return;
+        }
         // Get user input and validate it
         final String type = typeET.getText().toString();
         if (!validateType(type)) {

@@ -30,26 +30,11 @@
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="Confirmer le mot de passe"
+        android:inputType="textPassword"
         android:textColorHint="@color/hintTextColor"
-        android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passET" />
-
-    <EditText
-        android:id="@+id/lnameET"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:ems="10"
-        android:hint="Nom"
-        android:inputType="textPersonName"
-        android:textColorHint="@color/hintTextColor"
-        app:layout_constraintBottom_toTopOf="@+id/fnameET"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/fnameET"
@@ -60,7 +45,22 @@
         android:layout_marginBottom="16dp"
         android:ems="10"
         android:hint="Prénom"
-        android:inputType="textPersonName"
+        android:inputType="textCapWords"
+        android:textColorHint="@color/hintTextColor"
+        app:layout_constraintBottom_toTopOf="@+id/lnameET"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/lnameET"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:ems="10"
+        android:hint="Nom"
+        android:inputType="textCapWords"
         android:textColorHint="@color/hintTextColor"
         app:layout_constraintBottom_toTopOf="@+id/farmNumET"
         app:layout_constraintEnd_toEndOf="parent"
