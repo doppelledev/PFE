@@ -12,10 +12,8 @@ import java.io.IOException;
 
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.MicroRuntime;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 
 public class FarmerAgent extends Agent implements FarmerInterface{
     private static final String TAG = "FarmerAgent";
@@ -29,53 +27,49 @@ public class FarmerAgent extends Agent implements FarmerInterface{
         if (args != null && args.length >= 2) {
             context = (Context) getArguments()[0];
             farmer = (Farmer) getArguments()[1];
-            Log.d(TAG, "setup: farmer agent wohoo: " + farmer);
+            Log.d(TAG, "setup: farmer agent: " + farmer);
         } else {
             Log.d(TAG, "setup: wrong number of arguments");
         }
 
-        Log.d(TAG, "setup: *icro running? " + MicroRuntime.isRunning());
-        Log.d(TAG, "setup: sending broadcats");
         Intent broadcast = new Intent();
         broadcast.setAction(Strings.ACTION_LAUNCH_FARMER);
         broadcast.putExtra("farmer", farmer);
         context.sendBroadcast(broadcast);
 
+        // Activate GUI
         registerO2AInterface(FarmerInterface.class, this);
 
-        final MessageTemplate template = MessageTemplate.and(
-                MessageTemplate.or(
-                        MessageTemplate.MatchPerformative(ACLMessage.FAILURE),
-                        MessageTemplate.MatchPerformative(ACLMessage.CONFIRM)
-                ),
-                MessageTemplate.MatchOntology("plot-modification")
-        );
-        addBehaviour(new CyclicBehaviour() {
-            @Override
-            public void action() {
-                ACLMessage message = receive(template);
-                if (message != null) {
-                    if (message.getPerformative() == ACLMessage.CONFIRM) {
-                        Intent broadcast = new Intent();
-                        broadcast.setAction(Strings.ACTION_MODIFICATION_SUCCEDED);
-                        context.sendBroadcast(broadcast);
-                    } else if (message.getPerformative() == ACLMessage.FAILURE) {
-                        Intent broadcast = new Intent();
-                        broadcast.setAction(Strings.ACTION_MODIFICATION_FAILED);
-                        context.sendBroadcast(broadcast);
-                    }
-                } else {
-                    block();
+        // Ad behaviour
+        addBehaviour(new ModificationBehaviour());
+    }
+
+    private class ModificationBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.MODIFICATION);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_MODIFICATION_SUCCEEDED);
+                    context.sendBroadcast(broadcast);
+                } else if (message.getPerformative() == ACLMessage.FAILURE) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_MODIFICATION_FAILED);
+                    context.sendBroadcast(broadcast);
                 }
+            } else {
+                block();
             }
-        });
+        }
     }
 
     @Override
     public void modifyPlot(Plot plot) {
+        // send a request to the server to modify the plot
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
-        message.setOntology("plot-modification");
+        message.setOntology(Strings.ONTOLOGY_MDF);
         try {
             message.setContentObject(plot);
         } catch (IOException e) {

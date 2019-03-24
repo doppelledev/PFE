@@ -68,7 +68,7 @@ public class FarmerActivity extends AppCompatActivity {
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Strings.ACTION_MODIFICATION_FAILED);
-        filter.addAction(Strings.ACTION_MODIFICATION_SUCCEDED);
+        filter.addAction(Strings.ACTION_MODIFICATION_SUCCEEDED);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -300,7 +300,7 @@ public class FarmerActivity extends AppCompatActivity {
             final String action = intent.getAction();
             if (action == null)
                 return;
-            if (action.equals(Strings.ACTION_MODIFICATION_SUCCEDED)) {
+            if (action.equals(Strings.ACTION_MODIFICATION_SUCCEEDED)) {
                 success();
             } else {
                 failure();
