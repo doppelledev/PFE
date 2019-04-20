@@ -5,9 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.android.distributeurdeau.AddPlotActivity;
 import com.example.android.distributeurdeau.MainActivity;
@@ -30,7 +29,7 @@ import jade.android.RuntimeCallback;
 import jade.core.MicroRuntime;
 import jade.core.NotFoundException;
 
-public class FarmerActivity extends AppCompatActivity implements PlotAdapter.PlotClickListener{
+public class FarmerActivity extends AppCompatActivity implements PlotAdapter.PlotClickListener {
 
     private static final String TAG = "FarmerActivity";
 
@@ -92,7 +91,7 @@ public class FarmerActivity extends AppCompatActivity implements PlotAdapter.Plo
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 0) {
-            if(resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 Plot plot = (Plot) data.getSerializableExtra(Strings.EXTRA_PLOT);
                 farmer.getPlots().add(plot);
                 adapter.notifyDataSetChanged();

@@ -39,7 +39,7 @@ public class PlotAdapter extends RecyclerView.Adapter<PlotAdapter.ViewHolder> {
         viewHolder.bind(i);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView plotNameTV;
 
         public ViewHolder(@NonNull View itemView) {
@@ -47,7 +47,6 @@ public class PlotAdapter extends RecyclerView.Adapter<PlotAdapter.ViewHolder> {
             plotNameTV = itemView.findViewById(R.id.plotNameTV);
             itemView.setOnClickListener(this);
         }
-
 
 
         public void bind(int i) {

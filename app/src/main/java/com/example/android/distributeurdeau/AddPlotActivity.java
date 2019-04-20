@@ -8,8 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -206,7 +206,7 @@ public class AddPlotActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_CANCELED,returnIntent);
+        setResult(Activity.RESULT_CANCELED, returnIntent);
         finish();
     }
 

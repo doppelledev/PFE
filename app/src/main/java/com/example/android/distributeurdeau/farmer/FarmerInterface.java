@@ -4,5 +4,6 @@ import com.example.android.distributeurdeau.models.Plot;
 
 public interface FarmerInterface {
     void modifyPlot(Plot plot);
+
     void addPlot(Plot plot);
 }
