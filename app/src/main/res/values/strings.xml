@@ -26,6 +26,7 @@
     <string name="profit">Profit</string>
     <string name="estimate">Estimation</string>
     <string name="modify">modifier</string>
+    <string name="delete">supprimer</string>
 
     <string name="toast_launch_failed">Impossible de lancer le service</string>
     <string name="toast_login_failed">"Connexion échouée"</string>

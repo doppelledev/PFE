@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,9 +15,11 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.android.distributeurdeau.MainActivity;
+import com.example.android.distributeurdeau.PlotActivity;
 import com.example.android.distributeurdeau.R;
 import com.example.android.distributeurdeau.Strings;
 import com.example.android.distributeurdeau.models.Farmer;
+import com.example.android.distributeurdeau.models.Plot;
 
 import jade.android.MicroRuntimeService;
 import jade.android.RuntimeCallback;
@@ -65,6 +68,9 @@ public class FarmerActivity extends AppCompatActivity implements PlotAdapter.Plo
         RecyclerView recyclerView = findViewById(R.id.farmerRV);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
 
     }
 
@@ -132,12 +138,13 @@ public class FarmerActivity extends AppCompatActivity implements PlotAdapter.Plo
     private class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-
         }
     }
 
     @Override
     public void onClick(int i) {
-        Toast.makeText(this, "Position: " + i, Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, PlotActivity.class);
+        intent.putExtra(Strings.EXTRA_PLOT, farmer.getPlots().get(i));
+        startActivity(intent);
     }
 }

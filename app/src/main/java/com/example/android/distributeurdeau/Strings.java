@@ -14,6 +14,7 @@ public class Strings {
     public static final String ACTION_MODIFICATION_FAILED = "modification_failed";
     // Intent extras
     public static final String EXTRA_FARMER = "farmer";
+    public static final String EXTRA_PLOT = "plot";
     // Ontology
     public static final String ONTOLOGY_AUTH = "authentication";
     public static final String ONTOLOGY_REG = "registration";
