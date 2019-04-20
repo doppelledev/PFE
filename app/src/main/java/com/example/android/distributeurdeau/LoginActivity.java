@@ -15,6 +15,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.distributeurdeau.farmer.FarmerActivity;
+import com.example.android.distributeurdeau.farmer.FarmerAgent;
 import com.example.android.distributeurdeau.models.Farmer;
 
 import jade.android.MicroRuntimeService;

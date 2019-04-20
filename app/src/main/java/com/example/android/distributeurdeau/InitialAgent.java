@@ -85,7 +85,7 @@ public class InitialAgent extends Agent implements LoginInterface {
                         e.printStackTrace();
                     }
                     Log.d(TAG, "action: farmer" + f);
-                    // And send a broadcast to launch FarmerActivity
+                    // And send a broadcast to launch PlotActivity
                     Intent intent = new Intent();
                     intent.setAction(Strings.ACTION_LOGIN_SUCCEEDED);
                     intent.putExtra(Strings.EXTRA_FARMER, f);

@@ -1,4 +1,4 @@
-package com.example.android.distributeurdeau;
+package com.example.android.distributeurdeau.farmer;
 
 import com.example.android.distributeurdeau.models.Plot;
 

@@ -1,9 +1,11 @@
-package com.example.android.distributeurdeau;
+package com.example.android.distributeurdeau.farmer;
 
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.example.android.distributeurdeau.Strings;
+import com.example.android.distributeurdeau.Templates;
 import com.example.android.distributeurdeau.models.Database;
 import com.example.android.distributeurdeau.models.Farmer;
 import com.example.android.distributeurdeau.models.Plot;
