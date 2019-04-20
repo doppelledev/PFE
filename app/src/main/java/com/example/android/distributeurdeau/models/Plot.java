@@ -14,10 +14,11 @@ public class Plot implements Serializable {
     private Date s_date;
     private String type;
 
-    public Plot(Farmer farmer, String p_name, String type, int area, int water_qte) {
+    public Plot(Farmer farmer, String p_name, String type, float area, float water_qte, Date s_date) {
         this.p_name = p_name;
         this.farmer = farmer;
         this.type = type;
+        this.s_date = s_date;
         this.area = area;
         this.water_qte = water_qte;
     }

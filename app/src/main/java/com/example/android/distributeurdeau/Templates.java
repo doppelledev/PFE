@@ -28,4 +28,12 @@ public class Templates {
             ),
             MessageTemplate.MatchOntology(Strings.ONTOLOGY_MDF)
     );
+
+    public static final MessageTemplate ADDITION = MessageTemplate.and(
+            MessageTemplate.or(
+                    MessageTemplate.MatchPerformative(ACLMessage.FAILURE),
+                    MessageTemplate.MatchPerformative(ACLMessage.CONFIRM)
+            ),
+            MessageTemplate.MatchOntology(Strings.ONTOLOGY_ADD)
+    );
 }

@@ -29,9 +29,11 @@
     <string name="delete">supprimer</string>
 
     <string name="toast_launch_failed">Impossible de lancer le service</string>
-    <string name="toast_login_failed">"Connexion échouée"</string>
-    <string name="toast_invalid_type">"Type invalide"</string>
+    <string name="toast_login_failed">Connexion échouée</string>
+    <string name="toast_invalid_type">Type invalide</string>
+    <string name="toast_invalid_name">Nom invalide</string>
     <string name="toast_invalid_area">Supérficie invalide</string>
+    <string name="toast_invalid_date">Date invalide</string>
     <string name="toast_invalid_qte">Quantité d\'eau invalide</string>
     <string name="toast_modifications_saved">Modifications enregistrées</string>
     <string name="toast_error">Erreur</string>

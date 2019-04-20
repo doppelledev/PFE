@@ -44,6 +44,7 @@ public class FarmerAgent extends Agent implements FarmerInterface {
 
         // Ad behaviour
         addBehaviour(new ModificationBehaviour());
+        addBehaviour(new AdditionBehaviour());
     }
 
     @Override
@@ -60,10 +61,43 @@ public class FarmerAgent extends Agent implements FarmerInterface {
         send(message);
     }
 
+    @Override
+    public void addPlot(Plot plot) {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
+        message.setOntology(Strings.ONTOLOGY_ADD);
+        try {
+            message.setContentObject(plot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        send(message);
+    }
+
     private class ModificationBehaviour extends CyclicBehaviour {
         @Override
         public void action() {
             ACLMessage message = receive(Templates.MODIFICATION);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_MODIFICATION_SUCCEEDED);
+                    context.sendBroadcast(broadcast);
+                } else if (message.getPerformative() == ACLMessage.FAILURE) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_MODIFICATION_FAILED);
+                    context.sendBroadcast(broadcast);
+                }
+            } else {
+                block();
+            }
+        }
+    }
+
+    private class AdditionBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.ADDITION);
             if (message != null) {
                 if (message.getPerformative() == ACLMessage.CONFIRM) {
                     Intent broadcast = new Intent();

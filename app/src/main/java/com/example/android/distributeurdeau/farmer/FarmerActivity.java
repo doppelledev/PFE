@@ -1,9 +1,11 @@
 package com.example.android.distributeurdeau.farmer;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -12,8 +14,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.example.android.distributeurdeau.AddPlotActivity;
 import com.example.android.distributeurdeau.MainActivity;
 import com.example.android.distributeurdeau.PlotActivity;
 import com.example.android.distributeurdeau.R;
@@ -33,6 +37,7 @@ public class FarmerActivity extends AppCompatActivity implements PlotAdapter.Plo
     private Farmer farmer;
     private FarmerInterface farmerInterface;
     private Receiver receiver;
+    PlotAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +69,7 @@ public class FarmerActivity extends AppCompatActivity implements PlotAdapter.Plo
             Log.d(TAG, "onCreate: error: " + e);
         }
 
-        PlotAdapter adapter = new PlotAdapter(farmer.getPlots(), this);
+        adapter = new PlotAdapter(farmer.getPlots(), this);
         RecyclerView recyclerView = findViewById(R.id.farmerRV);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -72,6 +77,31 @@ public class FarmerActivity extends AppCompatActivity implements PlotAdapter.Plo
                 DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
 
+        FloatingActionButton fab = findViewById(R.id.addPlotFAB);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(FarmerActivity.this, AddPlotActivity.class);
+                intent.putExtra(Strings.EXTRA_FARMER, farmer);
+                startActivityForResult(intent, 0);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 0) {
+            if(resultCode == Activity.RESULT_OK){
+                Plot plot = (Plot) data.getSerializableExtra(Strings.EXTRA_PLOT);
+                farmer.getPlots().add(plot);
+                adapter.notifyDataSetChanged();
+                Log.d(TAG, "onActivityResult: hello allow me to iintroduce yself");
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
     }
 
     @Override

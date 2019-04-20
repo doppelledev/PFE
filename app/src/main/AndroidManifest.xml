@@ -15,7 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".farmer.FarmerActivity"></activity>
+        <activity android:name=".AddPlotActivity"></activity>
+        <activity android:name=".farmer.FarmerActivity" />
         <activity android:name=".LoginActivity" />
 
         <service android:name="jade.android.MicroRuntimeService" />
@@ -31,9 +32,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".PlotActivity">
-        <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value=".farmer.FarmerActivity" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".farmer.FarmerActivity" />
         </activity>
     </application>
 

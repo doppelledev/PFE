@@ -19,5 +19,6 @@ public class Strings {
     public static final String ONTOLOGY_AUTH = "authentication";
     public static final String ONTOLOGY_REG = "registration";
     public static final String ONTOLOGY_MDF = "plot-modification";
+    public static final String ONTOLOGY_ADD = "plot-addition";
 
 }
