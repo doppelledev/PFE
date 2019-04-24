@@ -37,6 +37,7 @@ public class SupervisorActivity extends AppCompatActivity implements ListItemCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_supervisor);
+        setTitle(R.string.supervisor);
 
         bindService(new Intent(getApplicationContext(), MicroRuntimeService.class),
                 MainActivity.serviceConnection,
