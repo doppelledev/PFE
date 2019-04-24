@@ -47,10 +47,15 @@
     <string name="toast_account_created">Compte crée</string>
     <string name="toast_no_plot">Aucune parcelle n\'a été sélectionnée</string>
     <string name="farmer_num">Numéro d\'agriculteur</string>
+    <string name="supervisor_num">Numéro de superviseur</string>
     <string name="confirm_password">Confirmer le mot de passe</string>
     <string name="first_name">Prénom</string>
     <string name="last_name">Nom</string>
     <string name="password">mot de passe</string>
     <string name="take_risk">Je prends le risque</string>
     <string name="network_error">Erreur de connexion</string>
+    <string name="farmer">Agriculteur</string>
+    <string name="supervisor">Superviseur</string>
+    <string name="refuse">refuser</string>
+    <string name="accept">accepter</string>
 </resources>

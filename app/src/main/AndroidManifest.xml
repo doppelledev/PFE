@@ -15,15 +15,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".AddPlotActivity"></activity>
+        <activity android:name=".supervisor.AnalyseFarmerActivity"></activity>
+        <activity android:name=".supervisor.AnalysePlotActivity" />
+        <activity android:name=".farmer.AddPlotActivity" />
         <activity android:name=".farmer.FarmerActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".login.LoginActivity" />
 
         <service android:name="jade.android.MicroRuntimeService" />
 
         <activity android:name=".SettingsActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".SupervisorActivity" />
+        <activity android:name=".supervisor.SupervisorActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +33,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PlotActivity">
+        <activity android:name=".farmer.PlotActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".farmer.FarmerActivity" />

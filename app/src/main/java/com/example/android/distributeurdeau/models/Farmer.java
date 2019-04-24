@@ -22,6 +22,8 @@ public class Farmer implements Serializable {
         this.risk = risk;
     }
 
+
+
     public String getF_name() {
         return f_name;
     }

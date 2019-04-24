@@ -1,4 +1,4 @@
-package com.example.android.distributeurdeau;
+package com.example.android.distributeurdeau.farmer;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -19,7 +19,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.distributeurdeau.farmer.FarmerInterface;
+import com.example.android.distributeurdeau.MainActivity;
+import com.example.android.distributeurdeau.R;
+import com.example.android.distributeurdeau.Strings;
 import com.example.android.distributeurdeau.models.Farmer;
 import com.example.android.distributeurdeau.models.Plot;
 
@@ -83,10 +85,10 @@ public class AddPlotActivity extends AppCompatActivity {
 
     private void setupViews() {
         plotNameET = findViewById(R.id.plotNameET);
-        typeET = findViewById(R.id.typeET);
-        areaET = findViewById(R.id.areaET);
+        typeET = findViewById(R.id.typeTV);
+        areaET = findViewById(R.id.areaTV);
         dateTV = findViewById(R.id.dateTV);
-        qteET = findViewById(R.id.qteET);
+        qteET = findViewById(R.id.qteTV);
         progressBar = findViewById(R.id.farmerPB);
         progressBar.setVisibility(View.GONE);
 

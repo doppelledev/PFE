@@ -1,12 +1,10 @@
-package com.example.android.distributeurdeau.farmer;
+package com.example.android.distributeurdeau.supervisor;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,115 +12,75 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.example.android.distributeurdeau.ListItemClickListener;
 import com.example.android.distributeurdeau.MainActivity;
 import com.example.android.distributeurdeau.R;
 import com.example.android.distributeurdeau.Strings;
 import com.example.android.distributeurdeau.models.Farmer;
-import com.example.android.distributeurdeau.models.Plot;
+import com.example.android.distributeurdeau.models.Supervisor;
 
 import jade.android.MicroRuntimeService;
 import jade.android.RuntimeCallback;
 import jade.core.MicroRuntime;
 import jade.core.NotFoundException;
 
-public class FarmerActivity extends AppCompatActivity implements ListItemClickListener {
+public class SupervisorActivity extends AppCompatActivity implements ListItemClickListener {
+    private static final String TAG = "SupervisorActivity";
 
-    private static final String TAG = "FarmerActivity";
-
-    private Farmer farmer;
-    private FarmerInterface farmerInterface;
+    private SupervisorInterface supervisorInterface;
+    private Supervisor supervisor;
+    private FarmerAdapter adapter;
     private Receiver receiver;
-    private PlotAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_farmer);
-        setTitle("Parcelles");
-
-        // The current farmer's data
-        farmer = (Farmer) getIntent().getSerializableExtra(Strings.EXTRA_FARMER);
-        Log.d(TAG, "onCreate: " + farmer);
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Strings.ACTION_MODIFICATION_FAILED);
-        filter.addAction(Strings.ACTION_MODIFICATION_SUCCEEDED);
-        receiver = new Receiver();
-        registerReceiver(receiver, filter);
+        setContentView(R.layout.activity_supervisor);
 
         bindService(new Intent(getApplicationContext(), MicroRuntimeService.class),
                 MainActivity.serviceConnection,
                 Context.BIND_AUTO_CREATE);
 
+        supervisor = (Supervisor) getIntent().getSerializableExtra(Strings.EXTRA_SUPERVISOR);
         // Get the interface to communicate with the agent
         try {
-            farmerInterface = MicroRuntime.getAgent(farmer.getFarmer_num())
-                    .getO2AInterface(FarmerInterface.class);
+            supervisorInterface = MicroRuntime.getAgent(supervisor.getId())
+                    .getO2AInterface(SupervisorInterface.class);
 
         } catch (Exception e) {
             e.printStackTrace();
             Log.d(TAG, "onCreate: error: " + e);
         }
 
-        adapter = new PlotAdapter(farmer.getPlots(), this);
-        RecyclerView recyclerView = findViewById(R.id.farmerRV);
+
+        IntentFilter filter = new IntentFilter();
+        receiver = new Receiver();
+        registerReceiver(receiver, filter);
+
+        adapter = new FarmerAdapter(supervisor.getFarmers(), this);
+        RecyclerView recyclerView = findViewById(R.id.supervisorRV);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
-
-        FloatingActionButton fab = findViewById(R.id.addPlotFAB);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FarmerActivity.this, AddPlotActivity.class);
-                intent.putExtra(Strings.EXTRA_FARMER, farmer);
-                startActivityForResult(intent, 0);
-            }
-        });
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == 0) {
-            if (resultCode == Activity.RESULT_OK) {
-                Plot plot = (Plot) data.getSerializableExtra(Strings.EXTRA_PLOT);
-                farmer.getPlots().add(plot);
-                adapter.notifyDataSetChanged();
-                Log.d(TAG, "onActivityResult: hello allow me to iintroduce yself");
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
-            }
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.farmer_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.log_out:
-                logout();
-                break;
-        }
-        return true;
+    public void onClick(int i) {
+        Farmer farmer = supervisor.getFarmers().get(i);
+        Intent intent = new Intent(this, AnalyseFarmerActivity.class);
+        intent.putExtra(Strings.EXTRA_FARMER, farmer);
+        startActivity(intent);
+        Log.d(TAG, "onClick: clicked + " + farmer.getL_name());
     }
 
     private void logout() {
         try {
             Log.d(TAG, "logout: killing agent");
             // kill agent
-            MicroRuntime.killAgent(farmer.getFarmer_num());
+            MicroRuntime.killAgent(supervisor.getId());
             // stop container
             MainActivity.microRuntimeServiceBinder.stopAgentContainer(
                     new RuntimeCallback<Void>() {
@@ -150,6 +108,13 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
         }
     }
 
+    private class Receiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+        }
+    }
+
     @Override
     public void onBackPressed() {
         logout();
@@ -163,17 +128,19 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
         super.onDestroy();
     }
 
-    private class Receiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-        }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.farmer_menu, menu);
+        return true;
     }
 
     @Override
-    public void onClick(int i) {
-        Intent intent = new Intent(this, PlotActivity.class);
-        intent.putExtra(Strings.EXTRA_PLOT, farmer.getPlots().get(i));
-        startActivity(intent);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.log_out:
+                logout();
+                break;
+        }
+        return true;
     }
 }

@@ -1,11 +1,14 @@
-package com.example.android.distributeurdeau;
+package com.example.android.distributeurdeau.login;
 
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.example.android.distributeurdeau.Strings;
+import com.example.android.distributeurdeau.Templates;
 import com.example.android.distributeurdeau.models.Database;
 import com.example.android.distributeurdeau.models.Farmer;
+import com.example.android.distributeurdeau.models.Supervisor;
 
 import java.io.IOException;
 
@@ -15,8 +18,8 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 
-public class InitialAgent extends Agent implements LoginInterface {
-    private static final String TAG = "InitialAgent";
+public class LoginAgent extends Agent implements LoginInterface {
+    private static final String TAG = "LoginAgent";
 
     private Context context;
 
@@ -45,13 +48,14 @@ public class InitialAgent extends Agent implements LoginInterface {
     }
 
     @Override
-    public void authenticate(String numAgr, String pass) {
+    public void authenticate(String numAgr, String pass, boolean isFarmer) {
         // Send an authentication request to the server with the provided credentials
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         message.setOntology(Strings.ONTOLOGY_AUTH);
         message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
         message.addUserDefinedParameter(Database.farmer_num, numAgr);
         message.addUserDefinedParameter(Database.password, pass);
+        message.addUserDefinedParameter(Database.is_farmer, String.valueOf(isFarmer));
         send(message);
     }
 
@@ -74,22 +78,36 @@ public class InitialAgent extends Agent implements LoginInterface {
         public void action() {
             ACLMessage message = receive(Templates.AUTHENTICATION);
             if (message != null) {
-                Log.d(TAG, "action: auth message received");
+                Log.d(TAG, "action: auth message received: " + message.getPerformative());
                 if (message.getPerformative() == ACLMessage.CONFIRM) {
                     // The server authenticated the user
-                    // Retrieve his information
-                    Farmer f = null;
-                    try {
-                        f = (Farmer) message.getContentObject();
-                    } catch (UnreadableException e) {
-                        e.printStackTrace();
+                    // Retrieve his informatio
+                    boolean isFarmer = Boolean.valueOf(message.getUserDefinedParameter(Database.is_farmer));
+                    if (isFarmer) {
+                        Farmer f = null;
+                        try {
+                            f = (Farmer) message.getContentObject();
+                        } catch (UnreadableException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d(TAG, "action: farmer" + f);
+                        // And send a broadcast to launch PlotActivity
+                        Intent intent = new Intent();
+                        intent.setAction(Strings.ACTION_LOGIN_SUCCEEDED);
+                        intent.putExtra(Strings.EXTRA_FARMER, f);
+                        context.sendBroadcast(intent);
+                    } else {
+                        Supervisor s = null;
+                        try {
+                            s = (Supervisor) message.getContentObject();
+                        } catch (UnreadableException e) {
+                            e.printStackTrace();
+                        }
+                        Intent intent = new Intent();
+                        intent.setAction(Strings.ACTION_LOGIN_SUCCEEDED);
+                        intent.putExtra(Strings.EXTRA_SUPERVISOR, s);
+                        context.sendBroadcast(intent);
                     }
-                    Log.d(TAG, "action: farmer" + f);
-                    // And send a broadcast to launch PlotActivity
-                    Intent intent = new Intent();
-                    intent.setAction(Strings.ACTION_LOGIN_SUCCEEDED);
-                    intent.putExtra(Strings.EXTRA_FARMER, f);
-                    context.sendBroadcast(intent);
                 } else {
                     // The server couldn't authenticate the user
                     // Send a broadcast to inform him

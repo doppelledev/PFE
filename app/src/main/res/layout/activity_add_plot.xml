@@ -4,7 +4,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".PlotActivity"
+        tools:context=".farmer.PlotActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -23,7 +23,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/qteET" />
+            app:layout_constraintTop_toBottomOf="@+id/qteTV" />
 
         <TextView
             android:id="@+id/textView9"
@@ -33,14 +33,14 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="20dp"
             android:text="@string/water_qte"
-            app:layout_constraintBottom_toBottomOf="@+id/qteET"
-            app:layout_constraintEnd_toStartOf="@+id/qteET"
+            app:layout_constraintBottom_toBottomOf="@+id/qteTV"
+            app:layout_constraintEnd_toStartOf="@+id/qteTV"
             app:layout_constraintHorizontal_bias="0.55"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/qteET" />
+            app:layout_constraintTop_toTopOf="@+id/qteTV" />
 
         <EditText
-            android:id="@+id/typeET"
+            android:id="@+id/typeTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -89,10 +89,10 @@
             android:layout_marginTop="16dp"
             android:text="@string/area"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/typeET" />
+            app:layout_constraintTop_toBottomOf="@+id/typeTV" />
 
         <EditText
-            android:id="@+id/areaET"
+            android:id="@+id/areaTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -110,7 +110,7 @@
             android:layout_marginTop="16dp"
             android:text="@string/sowing_date"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/areaET" />
+            app:layout_constraintTop_toBottomOf="@+id/areaTV" />
 
         <TextView
             android:id="@+id/dateTV"
@@ -126,7 +126,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
         <EditText
-            android:id="@+id/qteET"
+            android:id="@+id/qteTV"
             android:layout_width="153dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

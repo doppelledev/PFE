@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.android.distributeurdeau.ListItemClickListener;
 import com.example.android.distributeurdeau.R;
 import com.example.android.distributeurdeau.models.Plot;
 
@@ -15,9 +16,9 @@ import java.util.Vector;
 public class PlotAdapter extends RecyclerView.Adapter<PlotAdapter.ViewHolder> {
 
     private Vector<Plot> plots;
-    private PlotClickListener listener;
+    private ListItemClickListener listener;
 
-    PlotAdapter(Vector<Plot> plots, PlotClickListener listener) {
+    public PlotAdapter(Vector<Plot> plots, ListItemClickListener listener) {
         this.plots = plots;
         this.listener = listener;
     }
@@ -60,7 +61,4 @@ public class PlotAdapter extends RecyclerView.Adapter<PlotAdapter.ViewHolder> {
         }
     }
 
-    interface PlotClickListener {
-        void onClick(int i);
-    }
 }

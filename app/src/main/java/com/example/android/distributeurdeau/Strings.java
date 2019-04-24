@@ -6,6 +6,7 @@ public class Strings {
     // Intent actions
     public static final String ACTION_LAUNCH_LOGIN = "launch_login";
     public static final String ACTION_LAUNCH_FARMER = "launch_farmer";
+    public static final String ACTION_LAUNCH_SUPERVISOR = "launch_supervisor";
     public static final String ACTION_LOGIN_FAILED = "login_failed";
     public static final String ACTION_LOGIN_SUCCEEDED = "login_succeeded";
     public static final String ACTION_REGISTRATION_FAILED = "reg_failed";
@@ -14,6 +15,7 @@ public class Strings {
     public static final String ACTION_MODIFICATION_FAILED = "modification_failed";
     // Intent extras
     public static final String EXTRA_FARMER = "farmer";
+    public static final String EXTRA_SUPERVISOR = "supervisor";
     public static final String EXTRA_PLOT = "plot";
     // Ontology
     public static final String ONTOLOGY_AUTH = "authentication";

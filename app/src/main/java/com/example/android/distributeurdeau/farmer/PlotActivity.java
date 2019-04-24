@@ -1,4 +1,4 @@
-package com.example.android.distributeurdeau;
+package com.example.android.distributeurdeau.farmer;
 
 import android.app.DatePickerDialog;
 import android.content.BroadcastReceiver;
@@ -20,7 +20,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.distributeurdeau.farmer.FarmerInterface;
+import com.example.android.distributeurdeau.MainActivity;
+import com.example.android.distributeurdeau.R;
+import com.example.android.distributeurdeau.Strings;
 import com.example.android.distributeurdeau.models.Plot;
 
 import java.sql.Date;
@@ -98,10 +100,10 @@ public class PlotActivity extends AppCompatActivity {
         farmerPB.setVisibility(View.GONE);
 
         plotNameTV = findViewById(R.id.plotNameTV);
-        typeET = findViewById(R.id.typeET);
-        areaET = findViewById(R.id.areaET);
+        typeET = findViewById(R.id.typeTV);
+        areaET = findViewById(R.id.areaTV);
         dateTV = findViewById(R.id.dateTV);
-        qteET = findViewById(R.id.qteET);
+        qteET = findViewById(R.id.qteTV);
 
         Button saveB = findViewById(R.id.saveB);
         saveB.setOnClickListener(new View.OnClickListener() {

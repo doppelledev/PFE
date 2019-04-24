@@ -3,6 +3,7 @@ package com.example.android.distributeurdeau.models;
 public class Database {
     public static String farmer_num = "farmer_num";
     public static String password = "password";
+    public static String is_farmer = "is_farmer";
     public static String manager = "databaseManager";
     // table names
     static String table_farmers = "farmers";

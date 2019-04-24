@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.android.distributeurdeau.login.LoginInterface;
 import com.example.android.distributeurdeau.models.Farmer;
 
 import java.util.regex.Matcher;

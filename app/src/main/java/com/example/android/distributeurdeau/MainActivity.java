@@ -21,6 +21,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.distributeurdeau.login.LoginActivity;
+import com.example.android.distributeurdeau.login.LoginAgent;
+
 import jade.android.AndroidHelper;
 import jade.android.MicroRuntimeService;
 import jade.android.MicroRuntimeServiceBinder;
@@ -214,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
     private void startAgent() {
         microRuntimeServiceBinder.startAgent(
                 INITIAL_AGENT_NAME,
-                InitialAgent.class.getName(),
+                LoginAgent.class.getName(),
                 new Object[]{getApplicationContext()},
                 new RuntimeCallback<Void>() {
                     @Override
