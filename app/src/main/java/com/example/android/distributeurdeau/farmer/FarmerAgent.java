@@ -45,6 +45,8 @@ public class FarmerAgent extends Agent implements FarmerInterface {
         // Ad behaviour
         addBehaviour(new ModificationBehaviour());
         addBehaviour(new AdditionBehaviour());
+        addBehaviour(new SendBehaviour());
+        addBehaviour(new DeleteBehaviour());
     }
 
     @Override
@@ -71,6 +73,26 @@ public class FarmerAgent extends Agent implements FarmerInterface {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        send(message);
+    }
+
+    @Override
+    public void sendPlot(String plotName, String farmerNum) {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
+        message.setOntology(Strings.ONTOLOGY_SEND);
+        message.addUserDefinedParameter(Database.p_name, plotName);
+        message.addUserDefinedParameter(Database.farmer_num, farmerNum);
+        send(message);
+    }
+
+    @Override
+    public void deletePlot(String plotName, String farmerNum) {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
+        message.setOntology(Strings.ONTOLOGY_DELETE);
+        message.addUserDefinedParameter(Database.p_name, plotName);
+        message.addUserDefinedParameter(Database.farmer_num, farmerNum);
         send(message);
     }
 
@@ -106,6 +128,46 @@ public class FarmerAgent extends Agent implements FarmerInterface {
                 } else if (message.getPerformative() == ACLMessage.FAILURE) {
                     Intent broadcast = new Intent();
                     broadcast.setAction(Strings.ACTION_MODIFICATION_FAILED);
+                    context.sendBroadcast(broadcast);
+                }
+            } else {
+                block();
+            }
+        }
+    }
+
+    private class SendBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.SEND);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_SEND_SUCCEEDED);
+                    context.sendBroadcast(broadcast);
+                } else if (message.getPerformative() == ACLMessage.FAILURE) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_SEND_FAILED);
+                    context.sendBroadcast(broadcast);
+                }
+            } else {
+                block();
+            }
+        }
+    }
+
+    private class DeleteBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.DELETE);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_DELETE_SUCCEEDED);
+                    context.sendBroadcast(broadcast);
+                } else if (message.getPerformative() == ACLMessage.FAILURE) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_DELETE_FAILED);
                     context.sendBroadcast(broadcast);
                 }
             } else {

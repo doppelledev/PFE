@@ -66,6 +66,9 @@ public class PlotActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Strings.ACTION_MODIFICATION_FAILED);
         filter.addAction(Strings.ACTION_MODIFICATION_SUCCEEDED);
+        filter.addAction(Strings.ACTION_SEND_FAILED);
+        filter.addAction(Strings.ACTION_SEND_SUCCEEDED);
+        filter.addAction(Strings.ACTION_DELETE_SUCCEEDED);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -121,6 +124,19 @@ public class PlotActivity extends AppCompatActivity {
                 showCalendar();
             }
         });
+
+        Button sendB = findViewById(R.id.sendB);
+        sendB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                send();
+            }
+        });
+
+        if (plot.getStatus() == 2) {
+            sendB.setEnabled(false);
+            sendB.setBackgroundColor(Color.GRAY);
+        }
 
         populateViews();
     }
@@ -188,6 +204,11 @@ public class PlotActivity extends AppCompatActivity {
         farmerInterface.modifyPlot(plot);
     }
 
+    private void send() {
+        farmerPB.setVisibility(View.VISIBLE);
+        farmerInterface.sendPlot(plot.getP_name(), plot.getFarmer().getFarmer_num());
+    }
+
     private boolean validateType(String type) {
         Matcher matcher = typePattern.matcher(type);
         return matcher.matches();
@@ -198,8 +219,26 @@ public class PlotActivity extends AppCompatActivity {
         farmerPB.setVisibility(View.GONE);
     }
 
-    private void success() {
+    private void modificationSuccess() {
         Toast.makeText(this, getString(R.string.toast_modifications_saved), Toast.LENGTH_SHORT).show();
+    }
+
+    private void sendSuccess() {
+        Toast.makeText(this, getString(R.string.toast_plot_sent), Toast.LENGTH_SHORT).show();
+        Intent broadcast = new Intent();
+        broadcast.setAction(Strings.ACTION_STATUS_UPDATE);
+        broadcast.putExtra(Strings.EXTRA_STATUS, 1);
+        broadcast.putExtra(Strings.EXTRA_PLOT, plot.getP_name());
+        sendBroadcast(broadcast);
+    }
+
+    private void deleteSuccess() {
+        Toast.makeText(this, getString(R.string.toast_plot_deleted), Toast.LENGTH_SHORT).show();
+        Intent broadcast = new Intent();
+        broadcast.setAction(Strings.ACTION_PLOT_REMOVE);
+        broadcast.putExtra(Strings.EXTRA_PLOT, plot.getP_name());
+        sendBroadcast(broadcast);
+        finish();
     }
 
     private void failure() {
@@ -226,7 +265,8 @@ public class PlotActivity extends AppCompatActivity {
     }
 
     private void deletePlot() {
-
+        farmerPB.setVisibility(View.VISIBLE);
+        farmerInterface.deletePlot(plot.getP_name(), plot.getFarmer().getFarmer_num());
     }
 
     @Override
@@ -244,10 +284,19 @@ public class PlotActivity extends AppCompatActivity {
             final String action = intent.getAction();
             if (action == null)
                 return;
-            if (action.equals(Strings.ACTION_MODIFICATION_SUCCEEDED)) {
-                success();
-            } else {
-                failure();
+            switch (action) {
+                case Strings.ACTION_MODIFICATION_SUCCEEDED:
+                    modificationSuccess();
+                    break;
+                case Strings.ACTION_SEND_SUCCEEDED:
+                    sendSuccess();
+                    break;
+                case Strings.ACTION_DELETE_SUCCEEDED:
+                    deleteSuccess();
+                    break;
+                default:
+                    failure();
+                    break;
             }
         }
     }

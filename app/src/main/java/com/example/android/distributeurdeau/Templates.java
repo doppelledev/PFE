@@ -36,4 +36,20 @@ public class Templates {
             ),
             MessageTemplate.MatchOntology(Strings.ONTOLOGY_ADD)
     );
+
+    public static final MessageTemplate SEND = MessageTemplate.and(
+            MessageTemplate.or(
+                    MessageTemplate.MatchPerformative(ACLMessage.FAILURE),
+                    MessageTemplate.MatchPerformative(ACLMessage.CONFIRM)
+            ),
+            MessageTemplate.MatchOntology(Strings.ONTOLOGY_SEND)
+    );
+
+    public static final MessageTemplate DELETE = MessageTemplate.and(
+            MessageTemplate.or(
+                    MessageTemplate.MatchPerformative(ACLMessage.FAILURE),
+                    MessageTemplate.MatchPerformative(ACLMessage.CONFIRM)
+            ),
+            MessageTemplate.MatchOntology(Strings.ONTOLOGY_DELETE)
+    );
 }

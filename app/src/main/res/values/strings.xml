@@ -46,6 +46,8 @@
     <string name="toast_invalid_pass">Mot de passe invalide</string>
     <string name="toast_account_created">Compte crée</string>
     <string name="toast_no_plot">Aucune parcelle n\'a été sélectionnée</string>
+    <string name="toast_plot_sent">La parcelle a été envoyée au gestionnaire</string>
+    <string name="toast_plot_deleted">La parcelle a été supprimée</string>
     <string name="farmer_num">Numéro d\'agriculteur</string>
     <string name="supervisor_num">Numéro de superviseur</string>
     <string name="confirm_password">Confirmer le mot de passe</string>

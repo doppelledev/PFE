@@ -13,6 +13,7 @@ public class Plot implements Serializable {
     private float water_qte;
     private Date s_date;
     private String type;
+    private int status;
 
     public Plot(Farmer farmer, String p_name, String type, float area, float water_qte, Date s_date) {
         this.p_name = p_name;
@@ -21,6 +22,15 @@ public class Plot implements Serializable {
         this.s_date = s_date;
         this.area = area;
         this.water_qte = water_qte;
+        status = 0;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public Farmer getFarmer() {
@@ -82,4 +92,5 @@ public class Plot implements Serializable {
                 ", type='" + type + '\'' +
                 '}';
     }
+
 }

@@ -48,8 +48,8 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
         Log.d(TAG, "onCreate: " + farmer);
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Strings.ACTION_MODIFICATION_FAILED);
-        filter.addAction(Strings.ACTION_MODIFICATION_SUCCEEDED);
+        filter.addAction(Strings.ACTION_STATUS_UPDATE);
+        filter.addAction(Strings.ACTION_PLOT_REMOVE);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -166,7 +166,29 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
     private class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-
+            switch (intent.getAction()) {
+                case Strings.ACTION_STATUS_UPDATE:
+                    String plotName = intent.getStringExtra(Strings.EXTRA_PLOT);
+                    int status = intent.getIntExtra(Strings.EXTRA_STATUS, 0);
+                    for (Plot plot : farmer.getPlots()) {
+                        if (plot.getP_name().equals(plotName))
+                            plot.setStatus(status);
+                    }
+                    adapter.notifyDataSetChanged();
+                    break;
+                case Strings.ACTION_PLOT_REMOVE:
+                    Log.d(TAG, "onReceive: before: " + farmer.getPlots().size());
+                    String plotNamae = intent.getStringExtra(Strings.EXTRA_PLOT);
+                    int i;
+                    for (i = 0; i < farmer.getPlots().size(); i++)
+                        if (farmer.getPlots().get(i).getP_name().equals(plotNamae))
+                            break;
+                    if (i < farmer.getPlots().size())
+                        farmer.getPlots().remove(i);
+                    adapter.notifyDataSetChanged();
+                    Log.d(TAG, "onReceive: after: " + farmer.getPlots().size());
+                    break;
+            }
         }
     }
 
