@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.android.distributeurdeau.MainActivity;
 import com.example.android.distributeurdeau.R;
 import com.example.android.distributeurdeau.constants.Strings;
+import com.example.android.distributeurdeau.models.CultureData;
 import com.example.android.distributeurdeau.models.Plot;
 
 import java.sql.Date;
@@ -52,6 +53,9 @@ public class PlotActivity extends AppCompatActivity {
     private TextView dateTV;
     private ProgressBar farmerPB;
 
+    private TextView besoinTV;
+    private TextView rendementTV;
+    private TextView profitTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +142,10 @@ public class PlotActivity extends AppCompatActivity {
             sendB.setBackgroundColor(Color.GRAY);
         }
 
+        besoinTV = findViewById(R.id.besoinTV);
+        profitTV = findViewById(R.id.profitTV);
+        rendementTV = findViewById(R.id.rendementTV);
+
         populateViews();
     }
 
@@ -147,6 +155,13 @@ public class PlotActivity extends AppCompatActivity {
         areaET.setText(String.valueOf(plot.getArea()));
         dateTV.setText(formatDate(plot.getS_date()));
         qteET.setText(String.valueOf(plot.getWater_qte()));
+
+        String besoin = String.valueOf(estimateBesoin()) + "  m3";
+        String rendement = String.valueOf(estimateRendement()) + " q/ha";
+        String profit = String.valueOf(estimateProfit()) + " Dh";
+        besoinTV.setText(besoin);
+        rendementTV.setText(rendement);
+        profitTV.setText(profit);
     }
 
     private String formatDate(Date date) {
@@ -202,11 +217,23 @@ public class PlotActivity extends AppCompatActivity {
             plot.setS_date(date);
         // Tell the agent to save user input
         farmerInterface.modifyPlot(plot);
+
+        for (Plot p : FarmerActivity.farmer.getPlots()) {
+            if (p.getP_name().equals(plot.getP_name())) {
+                p.setType(type);
+                p.setArea(Float.valueOf(area));
+                p.setWater_qte(Float.valueOf(qte));
+                if (date != null)
+                    p.setS_date(date);
+                return;
+            }
+        }
     }
 
     private void send() {
+        attemptToSave();
         farmerPB.setVisibility(View.VISIBLE);
-        farmerInterface.sendPlot(plot.getP_name(), plot.getFarmer().getFarmer_num());
+        farmerInterface.sendPlot(plot.getP_name(), plot.getFarmer().getFarmer_num(), plot.getWater_qte());
     }
 
     private boolean validateType(String type) {
@@ -267,6 +294,28 @@ public class PlotActivity extends AppCompatActivity {
     private void deletePlot() {
         farmerPB.setVisibility(View.VISIBLE);
         farmerInterface.deletePlot(plot.getP_name(), plot.getFarmer().getFarmer_num());
+    }
+
+    float estimateBesoin() {
+        return (plot.Kc * plot.ET0 - plot.PLUIE) * plot.getArea() / 0.007f * plot.getArea();
+    }
+
+    float estimateRendement() {
+        float etcAdj = (estimateBesoin() + plot.PLUIE) * plot.getArea();
+        float etc = plot.Kc * plot.ET0 * plot.getArea();
+        return (plot.Ky * (1 - etcAdj / etc) - 1) * plot.Ym * -1;
+    }
+
+    float estimateProfit() {
+        return estimateRendement() * getPriceFromCultureData() * plot.getArea();
+    }
+
+    float getPriceFromCultureData() {
+        for (CultureData data : farmerInterface.getCultureData()) {
+            if (data.getName().equals(plot.getType()))
+                return data.getPrice();
+        }
+        return 300.0f;
     }
 
     @Override

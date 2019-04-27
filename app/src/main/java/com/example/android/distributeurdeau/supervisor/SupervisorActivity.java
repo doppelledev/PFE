@@ -28,7 +28,7 @@ import jade.core.NotFoundException;
 public class SupervisorActivity extends AppCompatActivity implements ListItemClickListener {
     private static final String TAG = "SupervisorActivity";
 
-    private SupervisorInterface supervisorInterface;
+    public static SupervisorInterface supervisorInterface;
     private Supervisor supervisor;
     private FarmerAdapter adapter;
     private Receiver receiver;
@@ -108,6 +108,9 @@ public class SupervisorActivity extends AppCompatActivity implements ListItemCli
             Log.d(TAG, "logout: error: " + e);
         }
     }
+
+
+
 
     private class Receiver extends BroadcastReceiver {
         @Override

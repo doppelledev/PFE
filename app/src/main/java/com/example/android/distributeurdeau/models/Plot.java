@@ -21,6 +21,15 @@ public class Plot implements Serializable {
     public float PLUIE;
     public float Ym;
     public float Ky;
+    private float dotation;
+
+    public float getDotation() {
+        return dotation;
+    }
+
+    public void setDotation(float dotation) {
+        this.dotation = dotation;
+    }
 
     public Plot(Farmer farmer, String p_name, String type, float area, float water_qte, Date s_date) {
 
@@ -38,6 +47,22 @@ public class Plot implements Serializable {
         PLUIE = 0;
         Ym = 2;
         Ky = 1.05f;
+    }
+
+    public Plot(Plot p) {
+        this.p_name = p.p_name;
+        this.farmer = p.farmer;
+        this.type = p.type;
+        this.area = p.area;
+        this.s_date = p.s_date;
+        this.water_qte = p.water_qte;
+        this.status = p.status;
+        this.dotation = p.dotation;
+        this.Kc = p.Kc;
+        this.ET0 = p.ET0;
+        this.PLUIE = p.PLUIE;
+        this.Ym = p.Ym;
+        this.Ky = p.Ky;
     }
 
     public int getStatus() {

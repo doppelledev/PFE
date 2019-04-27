@@ -36,10 +36,11 @@
     <string name="toast_invalid_date">Date invalide</string>
     <string name="toast_invalid_qte">Quantité d\'eau invalide</string>
     <string name="toast_modifications_saved">Modifications enregistrées</string>
-    <string name="toast_error">Erreur</string>
+    <string name="toast_proposal_sent">Proposition envoyée</string>
     <string name="toast_invalid_host">Host invalide</string>
     <string name="toast_invalid_port">Port invalide</string>
     <string name="register">S\'inscrire</string>
+    <string name="toast_error">Erreur</string>
     <string name="toast_invalid_fname">Prénom invalide</string>
     <string name="toast_invalid_lname">Nom invalide</string>
     <string name="toast_invalid_number">Numéro d\'agriculteur invalid</string>
@@ -60,4 +61,5 @@
     <string name="supervisor">Superviseur</string>
     <string name="refuse">refuser</string>
     <string name="accept">accepter</string>
+
 </resources>

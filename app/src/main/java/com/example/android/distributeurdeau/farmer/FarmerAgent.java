@@ -88,12 +88,13 @@ public class FarmerAgent extends Agent implements FarmerInterface {
     }
 
     @Override
-    public void sendPlot(String plotName, String farmerNum) {
+    public void sendPlot(String plotName, String farmerNum, float waterQte) {
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
         message.setOntology(Strings.ONTOLOGY_SEND);
         message.addUserDefinedParameter(Database.p_name, plotName);
         message.addUserDefinedParameter(Database.farmer_num, farmerNum);
+        message.addUserDefinedParameter(Database.water_qte, String.valueOf(waterQte));
         send(message);
     }
 
@@ -204,5 +205,9 @@ public class FarmerAgent extends Agent implements FarmerInterface {
                 block();
             }
         }
+    }
+
+    public Vector<CultureData> getCultureData() {
+        return cultureData;
     }
 }

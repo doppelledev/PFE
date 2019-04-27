@@ -20,11 +20,8 @@ import com.example.android.distributeurdeau.ListItemClickListener;
 import com.example.android.distributeurdeau.MainActivity;
 import com.example.android.distributeurdeau.R;
 import com.example.android.distributeurdeau.constants.Strings;
-import com.example.android.distributeurdeau.models.CultureData;
 import com.example.android.distributeurdeau.models.Farmer;
 import com.example.android.distributeurdeau.models.Plot;
-
-import java.util.Vector;
 
 import jade.android.MicroRuntimeService;
 import jade.android.RuntimeCallback;
@@ -35,11 +32,10 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
 
     private static final String TAG = "FarmerActivity";
 
-    private Farmer farmer;
+    public static Farmer farmer;
     private FarmerInterface farmerInterface;
     private Receiver receiver;
     private PlotAdapter adapter;
-    private Vector<CultureData> cultureData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
