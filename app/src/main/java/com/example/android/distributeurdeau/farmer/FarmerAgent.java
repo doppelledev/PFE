@@ -4,24 +4,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.example.android.distributeurdeau.Strings;
-import com.example.android.distributeurdeau.Templates;
-import com.example.android.distributeurdeau.models.Database;
+import com.example.android.distributeurdeau.constants.Database;
+import com.example.android.distributeurdeau.constants.Strings;
+import com.example.android.distributeurdeau.constants.Templates;
+import com.example.android.distributeurdeau.models.CultureData;
 import com.example.android.distributeurdeau.models.Farmer;
 import com.example.android.distributeurdeau.models.Plot;
 
 import java.io.IOException;
+import java.util.Vector;
 
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 
 public class FarmerAgent extends Agent implements FarmerInterface {
     private static final String TAG = "FarmerAgent";
 
     private Context context;
     private Farmer farmer;
+    private Vector<CultureData> cultureData;
 
     @Override
     protected void setup() {
@@ -47,6 +51,13 @@ public class FarmerAgent extends Agent implements FarmerInterface {
         addBehaviour(new AdditionBehaviour());
         addBehaviour(new SendBehaviour());
         addBehaviour(new DeleteBehaviour());
+        addBehaviour(new CultureDataBehaviour());
+
+        // Get culture data
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.setOntology(Strings.ONTOLOGY_CULTURE_DATA);
+        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
+        send(message);
     }
 
     @Override
@@ -169,6 +180,25 @@ public class FarmerAgent extends Agent implements FarmerInterface {
                     Intent broadcast = new Intent();
                     broadcast.setAction(Strings.ACTION_DELETE_FAILED);
                     context.sendBroadcast(broadcast);
+                }
+            } else {
+                block();
+            }
+        }
+    }
+
+    private class CultureDataBehaviour extends CyclicBehaviour{
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.CULTURE_DATA);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    try {
+                        cultureData = (Vector<CultureData>) message.getContentObject();
+                        Log.d(TAG, "action: receviec data: " + cultureData.size());
+                    } catch (UnreadableException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 block();

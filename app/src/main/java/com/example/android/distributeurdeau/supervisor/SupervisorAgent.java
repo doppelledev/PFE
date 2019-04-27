@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.example.android.distributeurdeau.Strings;
+import com.example.android.distributeurdeau.constants.Strings;
 import com.example.android.distributeurdeau.models.Supervisor;
 
 import jade.core.Agent;

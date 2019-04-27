@@ -19,9 +19,12 @@ import android.view.View;
 import com.example.android.distributeurdeau.ListItemClickListener;
 import com.example.android.distributeurdeau.MainActivity;
 import com.example.android.distributeurdeau.R;
-import com.example.android.distributeurdeau.Strings;
+import com.example.android.distributeurdeau.constants.Strings;
+import com.example.android.distributeurdeau.models.CultureData;
 import com.example.android.distributeurdeau.models.Farmer;
 import com.example.android.distributeurdeau.models.Plot;
+
+import java.util.Vector;
 
 import jade.android.MicroRuntimeService;
 import jade.android.RuntimeCallback;
@@ -36,6 +39,7 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
     private FarmerInterface farmerInterface;
     private Receiver receiver;
     private PlotAdapter adapter;
+    private Vector<CultureData> cultureData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +170,8 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
     private class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action == null) return;
             switch (intent.getAction()) {
                 case Strings.ACTION_STATUS_UPDATE:
                     String plotName = intent.getStringExtra(Strings.EXTRA_PLOT);

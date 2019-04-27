@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.example.android.distributeurdeau.Strings;
-import com.example.android.distributeurdeau.Templates;
-import com.example.android.distributeurdeau.models.Database;
+import com.example.android.distributeurdeau.constants.Strings;
+import com.example.android.distributeurdeau.constants.Templates;
+import com.example.android.distributeurdeau.constants.Database;
 import com.example.android.distributeurdeau.models.Farmer;
 import com.example.android.distributeurdeau.models.Supervisor;
 

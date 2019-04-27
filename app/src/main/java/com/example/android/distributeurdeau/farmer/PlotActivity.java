@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.example.android.distributeurdeau.MainActivity;
 import com.example.android.distributeurdeau.R;
-import com.example.android.distributeurdeau.Strings;
+import com.example.android.distributeurdeau.constants.Strings;
 import com.example.android.distributeurdeau.models.Plot;
 
 import java.sql.Date;

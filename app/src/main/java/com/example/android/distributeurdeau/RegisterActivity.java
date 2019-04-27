@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.android.distributeurdeau.login.LoginInterface;
 import com.example.android.distributeurdeau.models.Farmer;
+import com.example.android.distributeurdeau.constants.Strings;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

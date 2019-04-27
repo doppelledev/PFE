@@ -11,7 +11,7 @@ import android.util.Log;
 
 import com.example.android.distributeurdeau.ListItemClickListener;
 import com.example.android.distributeurdeau.R;
-import com.example.android.distributeurdeau.Strings;
+import com.example.android.distributeurdeau.constants.Strings;
 import com.example.android.distributeurdeau.farmer.PlotAdapter;
 import com.example.android.distributeurdeau.models.Farmer;
 import com.example.android.distributeurdeau.models.Plot;

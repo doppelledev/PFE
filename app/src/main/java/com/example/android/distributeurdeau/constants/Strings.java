@@ -1,4 +1,4 @@
-package com.example.android.distributeurdeau;
+package com.example.android.distributeurdeau.constants;
 
 public class Strings {
     public static final String NETWORK_SETTINGS = "network_settings";
@@ -31,5 +31,6 @@ public class Strings {
     public static final String ONTOLOGY_ADD = "plot-addition";
     public static final String ONTOLOGY_SEND = "plot-send";
     public static final String ONTOLOGY_DELETE = "plot-delete";
+    public static final String ONTOLOGY_CULTURE_DATA = "culture-data";
 
 }

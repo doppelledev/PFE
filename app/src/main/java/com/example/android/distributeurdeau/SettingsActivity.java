@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.android.distributeurdeau.constants.Strings;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

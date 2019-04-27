@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.android.distributeurdeau.login.LoginActivity;
 import com.example.android.distributeurdeau.login.LoginAgent;
+import com.example.android.distributeurdeau.constants.Strings;
 
 import jade.android.AndroidHelper;
 import jade.android.MicroRuntimeService;

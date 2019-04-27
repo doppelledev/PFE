@@ -1,4 +1,4 @@
-package com.example.android.distributeurdeau;
+package com.example.android.distributeurdeau.constants;
 
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -51,5 +51,13 @@ public class Templates {
                     MessageTemplate.MatchPerformative(ACLMessage.CONFIRM)
             ),
             MessageTemplate.MatchOntology(Strings.ONTOLOGY_DELETE)
+    );
+
+    public static final MessageTemplate CULTURE_DATA = MessageTemplate.and(
+            MessageTemplate.or(
+                    MessageTemplate.MatchPerformative(ACLMessage.FAILURE),
+                    MessageTemplate.MatchPerformative(ACLMessage.CONFIRM)
+            ),
+            MessageTemplate.MatchOntology(Strings.ONTOLOGY_CULTURE_DATA)
     );
 }

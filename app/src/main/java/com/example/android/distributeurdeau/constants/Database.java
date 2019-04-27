@@ -1,4 +1,4 @@
-package com.example.android.distributeurdeau.models;
+package com.example.android.distributeurdeau.constants;
 
 public class Database {
     public static String farmer_num = "farmer_num";
