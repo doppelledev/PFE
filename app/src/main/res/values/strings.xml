@@ -69,5 +69,7 @@
     <string name="alert">Alerte</string>
     <string name="yes">oui</string>
     <string name="no">non</string>
+    <string name="propose">proposer</string>
+    <string name="toast_negotiation_canceled">La négociation a été annulée</string>
 
 </resources>

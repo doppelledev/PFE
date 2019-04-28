@@ -18,7 +18,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/round_bg_green1"
-            android:text="@string/refuse"
+            android:text="@string/propose"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"

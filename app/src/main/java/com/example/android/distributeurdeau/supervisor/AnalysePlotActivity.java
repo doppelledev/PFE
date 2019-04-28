@@ -97,24 +97,14 @@ public class AnalysePlotActivity extends AppCompatActivity {
         qteTV.setText(String.valueOf(plot.getWater_qte()));
     }
 
-    void disableAccept() {
-        acceptB.setEnabled(false);
-        acceptB.setBackground(getDrawable(R.drawable.round_bg_gray));
+    void enableAccept(boolean enable) {
+        acceptB.setEnabled(enable);
+        acceptB.setBackground(getDrawable(enable ? R.drawable.round_bg_green1 : R.drawable.round_bg_gray));
     }
 
-    void enableAccept() {
-        acceptB.setEnabled(true);
-        acceptB.setBackground(getDrawable(R.drawable.round_bg_green1));
-    }
-
-    void disablePropose() {
-        refuseB.setEnabled(false);
-        refuseB.setBackground(getDrawable(R.drawable.round_bg_gray));
-    }
-
-    void enablePropose() {
-        refuseB.setEnabled(true);
-        refuseB.setBackground(getDrawable(R.drawable.round_bg_green1));
+    void enablePropose(boolean enable) {
+        refuseB.setEnabled(enable);
+        refuseB.setBackground(getDrawable(enable ? R.drawable.round_bg_green1 : R.drawable.round_bg_gray));
     }
 
     private String formatDate(Date date) {
@@ -163,15 +153,15 @@ public class AnalysePlotActivity extends AppCompatActivity {
         Log.d(TAG, "analyse: estimated " + estimated);
         if (besoin == estimated) {
             if (besoin > dotation) {
-                float newArea = dotation / (plot.Kc * plot.ET0 - plot.PLUIE);
+                float newArea = dotation / (plot.Kc * plot.ET0 - plot.PLUIE) * 0.007f;
                 proposedPlot = new Plot(plot);
                 proposedPlot.setArea(newArea);
                 // TODO : Date de semi
-                enablePropose();
-                disableAccept();
+                enablePropose(true);
+                enableAccept(false);
             } else {
-                enableAccept();
-                disablePropose();
+                enableAccept(true);
+                enablePropose(false);
                 // TODO: accepter le plan
             }
         } else {

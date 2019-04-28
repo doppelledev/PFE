@@ -364,7 +364,7 @@ public class PlotActivity extends AppCompatActivity {
     }
 
     private void cancelSucceeded() {
-        Toast.makeText(this, getString(R.string.toast_plot_deleted), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.toast_negotiation_canceled), Toast.LENGTH_SHORT).show();
         enableButton1(true);
         enableButton2(false);
         plot.setStatus(0);
