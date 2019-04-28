@@ -68,4 +68,12 @@ public class Templates {
             ),
             MessageTemplate.MatchOntology(Strings.ONTOLOGY_PROPOSE)
     );
+
+    public static final MessageTemplate CANCEL_NEGOTIATION = MessageTemplate.and(
+            MessageTemplate.or(
+                    MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
+                    MessageTemplate.MatchPerformative(ACLMessage.FAILURE)
+            ),
+            MessageTemplate.MatchOntology(Strings.ONTOLOGY_CANCEL)
+    );
 }

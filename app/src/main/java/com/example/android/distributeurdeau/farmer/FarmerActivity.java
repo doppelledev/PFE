@@ -50,6 +50,7 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
         IntentFilter filter = new IntentFilter();
         filter.addAction(Strings.ACTION_STATUS_UPDATE);
         filter.addAction(Strings.ACTION_PLOT_REMOVE);
+        filter.addAction(Strings.ACTION_PLOT_CANCEL);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -179,19 +180,36 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
                     adapter.notifyDataSetChanged();
                     break;
                 case Strings.ACTION_PLOT_REMOVE:
-                    Log.d(TAG, "onReceive: before: " + farmer.getPlots().size());
                     String plotNamae = intent.getStringExtra(Strings.EXTRA_PLOT);
-                    int i;
-                    for (i = 0; i < farmer.getPlots().size(); i++)
-                        if (farmer.getPlots().get(i).getP_name().equals(plotNamae))
-                            break;
-                    if (i < farmer.getPlots().size())
-                        farmer.getPlots().remove(i);
-                    adapter.notifyDataSetChanged();
-                    Log.d(TAG, "onReceive: after: " + farmer.getPlots().size());
+                    int index1 = getPlotIndexByName(plotNamae);
+                    if (index1 >= 0) {
+                        farmer.getPlots().remove(index1);
+                        adapter.notifyDataSetChanged();
+                    }
+                    break;
+                case Strings.ACTION_PLOT_CANCEL:
+                    String plotNamae2 = intent.getStringExtra(Strings.EXTRA_PLOT);
+                    int index2 = getPlotIndexByName(plotNamae2);
+                    if (index2 < farmer.getPlots().size()) {
+                        Plot plot = farmer.getPlots().get(index2);
+                        plot.setStatus(0);
+                        plot.proposed = null;
+                        plot.isFarmerTurn = true;
+                        adapter.notifyDataSetChanged();
+                    }
                     break;
             }
         }
+    }
+
+    private int getPlotIndexByName(String pname) {
+        int i;
+        for (i = 0; i < farmer.getPlots().size(); i++)
+            if (farmer.getPlots().get(i).getP_name().equals(pname))
+                break;
+        if (i < farmer.getPlots().size())
+            return i;
+        return -1;
     }
 
     @Override

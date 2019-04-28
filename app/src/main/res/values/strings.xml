@@ -39,7 +39,6 @@
     <string name="toast_proposal_sent">Proposition envoyée</string>
     <string name="toast_invalid_host">Host invalide</string>
     <string name="toast_invalid_port">Port invalide</string>
-    <string name="register">S\'inscrire</string>
     <string name="toast_error">Erreur</string>
     <string name="toast_invalid_fname">Prénom invalide</string>
     <string name="toast_invalid_lname">Nom invalide</string>
@@ -49,6 +48,8 @@
     <string name="toast_no_plot">Aucune parcelle n\'a été sélectionnée</string>
     <string name="toast_plot_sent">La parcelle a été envoyée au gestionnaire</string>
     <string name="toast_plot_deleted">La parcelle a été supprimée</string>
+    <string name="toast_negotiating">La parcelle est en cours de négociation</string>
+    <string name="register">S\'inscrire</string>
     <string name="farmer_num">Numéro d\'agriculteur</string>
     <string name="supervisor_num">Numéro de superviseur</string>
     <string name="confirm_password">Confirmer le mot de passe</string>

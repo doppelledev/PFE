@@ -52,7 +52,7 @@ public class FarmerAgent extends Agent implements FarmerInterface {
         addBehaviour(new SendBehaviour());
         addBehaviour(new DeleteBehaviour());
         addBehaviour(new CultureDataBehaviour());
-
+        addBehaviour(new CancelBehaviour());
         // Get culture data
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         message.setOntology(Strings.ONTOLOGY_CULTURE_DATA);
@@ -103,6 +103,16 @@ public class FarmerAgent extends Agent implements FarmerInterface {
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
         message.setOntology(Strings.ONTOLOGY_DELETE);
+        message.addUserDefinedParameter(Database.p_name, plotName);
+        message.addUserDefinedParameter(Database.farmer_num, farmerNum);
+        send(message);
+    }
+
+    @Override
+    public void cancelNegotiation(String plotName, String farmerNum) {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
+        message.setOntology(Strings.ONTOLOGY_CANCEL);
         message.addUserDefinedParameter(Database.p_name, plotName);
         message.addUserDefinedParameter(Database.farmer_num, farmerNum);
         send(message);
@@ -200,6 +210,26 @@ public class FarmerAgent extends Agent implements FarmerInterface {
                     } catch (UnreadableException e) {
                         e.printStackTrace();
                     }
+                }
+            } else {
+                block();
+            }
+        }
+    }
+
+    private class CancelBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.CANCEL_NEGOTIATION);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_CANCEL_SUCCEEDED);
+                    context.sendBroadcast(broadcast);
+                } else if (message.getPerformative() == ACLMessage.FAILURE) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_CANCEL_FAILED);
+                    context.sendBroadcast(broadcast);
                 }
             } else {
                 block();

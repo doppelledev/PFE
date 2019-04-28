@@ -18,9 +18,12 @@ public class Strings {
     public static final String ACTION_DELETE_FAILED= "delete_failed";
     public static final String ACTION_DELETE_SUCCEEDED= "delete_succeeded";
     public static final String ACTION_PLOT_REMOVE= "plot_remove";
+    public static final String ACTION_PLOT_CANCEL= "plot_cancel";
     public static final String ACTION_STATUS_UPDATE= "status_update";
     public static final String ACTION_PROPOSAL_SENT= "proposal_sent";
     public static final String ACTION_PROPOSAL_FAILED= "proposal_failed";
+    public static final String ACTION_CANCEL_FAILED= "cancel_failed";
+    public static final String ACTION_CANCEL_SUCCEEDED= "cancel_succeeded";
     // Intent extras
     public static final String EXTRA_FARMER = "farmer";
     public static final String EXTRA_SUPERVISOR = "supervisor";
@@ -34,6 +37,8 @@ public class Strings {
     public static final String ONTOLOGY_SEND = "plot-send";
     public static final String ONTOLOGY_DELETE = "plot-delete";
     public static final String ONTOLOGY_PROPOSE = "propose-plot";
-    public static final String ONTOLOGY_CULTURE_DATA = "culture-data";
+    public static final String ONTOLOGY_CANCEL = "cancel-negotiation";
     public static final String ONTOLOGY_END = "end-negotiation";
+    public static final String ONTOLOGY_CULTURE_DATA = "culture-data";
+
 }

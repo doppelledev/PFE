@@ -78,6 +78,8 @@ public class PlotActivity extends AppCompatActivity {
         filter.addAction(Strings.ACTION_SEND_FAILED);
         filter.addAction(Strings.ACTION_SEND_SUCCEEDED);
         filter.addAction(Strings.ACTION_DELETE_SUCCEEDED);
+        filter.addAction(Strings.ACTION_CANCEL_FAILED);
+        filter.addAction(Strings.ACTION_CANCEL_SUCCEEDED);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -164,7 +166,7 @@ public class PlotActivity extends AppCompatActivity {
             button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO: cancel plot
+                    cancel();
                 }
             });
             if (plot.getStatus() == 0) {
@@ -177,7 +179,7 @@ public class PlotActivity extends AppCompatActivity {
                 enableButton1(false);
                 enableButton2(false);
             }
-            enableViews(true);
+            enableViews(plot.getStatus() == 0);
         } else {
             populateViews(plot.proposed);
             button1.setText(getString(R.string.accept));
@@ -197,6 +199,7 @@ public class PlotActivity extends AppCompatActivity {
             });
             enableButton1(true);
             enableButton2(true);
+            // TODO: set on click listeners
             enableViews(false);
         }
     }
@@ -321,6 +324,11 @@ public class PlotActivity extends AppCompatActivity {
         farmerInterface.sendPlot(plot.getP_name(), plot.getFarmer().getFarmer_num(), plot.getWater_qte());
     }
 
+    private void cancel() {
+        farmerPB.setVisibility(View.VISIBLE);
+        farmerInterface.cancelNegotiation(plot.getP_name(), plot.getFarmer().getFarmer_num());
+    }
+
     private boolean validateType(String type) {
         Matcher matcher = typePattern.matcher(type);
         return matcher.matches();
@@ -337,6 +345,8 @@ public class PlotActivity extends AppCompatActivity {
 
     private void sendSuccess() {
         Toast.makeText(this, getString(R.string.toast_plot_sent), Toast.LENGTH_SHORT).show();
+        enableButton1(false);
+        enableButton2(true);
         Intent broadcast = new Intent();
         broadcast.setAction(Strings.ACTION_STATUS_UPDATE);
         broadcast.putExtra(Strings.EXTRA_STATUS, 1);
@@ -351,6 +361,19 @@ public class PlotActivity extends AppCompatActivity {
         broadcast.putExtra(Strings.EXTRA_PLOT, plot.getP_name());
         sendBroadcast(broadcast);
         finish();
+    }
+
+    private void cancelSucceeded() {
+        Toast.makeText(this, getString(R.string.toast_plot_deleted), Toast.LENGTH_SHORT).show();
+        enableButton1(true);
+        enableButton2(false);
+        plot.setStatus(0);
+        plot.proposed = null;
+        plot.isFarmerTurn = true;
+        Intent broadcast = new Intent();
+        broadcast.setAction(Strings.ACTION_PLOT_CANCEL);
+        broadcast.putExtra(Strings.EXTRA_PLOT, plot.getP_name());
+        sendBroadcast(broadcast);
     }
 
     private void failure() {
@@ -370,8 +393,12 @@ public class PlotActivity extends AppCompatActivity {
                 showDeleteAlert();
                 break;
             case R.id.save:
-                farmerPB.setVisibility(View.VISIBLE);
-                attemptToSave();
+                if (plot.getStatus() == 0) {
+                    farmerPB.setVisibility(View.VISIBLE);
+                    attemptToSave();
+                } else {
+                    Toast.makeText(this, getString(R.string.toast_negotiating), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case android.R.id.home:
                 onBackPressed();
@@ -450,6 +477,9 @@ public class PlotActivity extends AppCompatActivity {
                     break;
                 case Strings.ACTION_DELETE_SUCCEEDED:
                     deleteSuccess();
+                    break;
+                case Strings.ACTION_CANCEL_SUCCEEDED:
+                    cancelSucceeded();
                     break;
                 default:
                     failure();

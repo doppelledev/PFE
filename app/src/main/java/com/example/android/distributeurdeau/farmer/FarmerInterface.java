@@ -14,5 +14,7 @@ public interface FarmerInterface {
 
     void deletePlot(String plotName, String farmerNum);
 
+    void cancelNegotiation(String plotName, String farmerNum);
+
     Vector<CultureData> getCultureData();
 }
