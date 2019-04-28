@@ -61,5 +61,12 @@
     <string name="supervisor">Superviseur</string>
     <string name="refuse">refuser</string>
     <string name="accept">accepter</string>
+    <string name="original">Originale</string>
+    <string name="proposed">Proposée</string>
+    <string name="cancel">Annuler</string>
+    <string name="delete_plot">Supprimer la parcelle?</string>
+    <string name="alert">Alerte</string>
+    <string name="yes">oui</string>
+    <string name="no">non</string>
 
 </resources>

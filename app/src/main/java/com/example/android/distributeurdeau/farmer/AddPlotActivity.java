@@ -148,7 +148,6 @@ public class AddPlotActivity extends AppCompatActivity {
         }
 
         plot = new Plot(farmer, name, type, Float.valueOf(area), Float.valueOf(qte), date);
-
         // Tell the agent to save user input
         farmerInterface.addPlot(plot);
     }

@@ -3,11 +3,13 @@ package com.example.android.distributeurdeau.farmer;
 import android.app.DatePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +19,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,12 +49,14 @@ public class PlotActivity extends AppCompatActivity {
     private Receiver receiver;
     private DatePickerDialog.OnDateSetListener calListener;
 
-    private TextView plotNameTV;
     private EditText typeET;
     private EditText areaET;
     private EditText qteET;
     private TextView dateTV;
     private ProgressBar farmerPB;
+    private Button button1;
+    private Button button2;
+    private Button editB;
 
     private TextView besoinTV;
     private TextView rendementTV;
@@ -61,11 +66,11 @@ public class PlotActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plot);
-        setTitle(getString(R.string.plots));
 
         // The current farmer's data
         plot = (Plot) getIntent().getSerializableExtra(Strings.EXTRA_PLOT);
         Log.d(TAG, "onCreate: " + plot);
+        setTitle(plot.getP_name());
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Strings.ACTION_MODIFICATION_FAILED);
@@ -100,28 +105,22 @@ public class PlotActivity extends AppCompatActivity {
         };
 
         setupViews();
+        showOriginal(true);
     }
 
     private void setupViews() {
         farmerPB = findViewById(R.id.farmerPB);
         farmerPB.setVisibility(View.GONE);
 
-        plotNameTV = findViewById(R.id.plotNameTV);
         typeET = findViewById(R.id.typeTV);
         areaET = findViewById(R.id.areaTV);
         dateTV = findViewById(R.id.dateTV);
         qteET = findViewById(R.id.qteTV);
 
-        Button saveB = findViewById(R.id.saveB);
-        saveB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                farmerPB.setVisibility(View.VISIBLE);
-                attemptToSave();
-            }
-        });
+        button1 = findViewById(R.id.button1);
+        button2 = findViewById(R.id.button2);
 
-        Button editB = findViewById(R.id.editB);
+        editB = findViewById(R.id.editB);
         editB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,28 +128,90 @@ public class PlotActivity extends AppCompatActivity {
             }
         });
 
-        Button sendB = findViewById(R.id.sendB);
-        sendB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                send();
-            }
-        });
+
 
         if (plot.getStatus() == 2) {
-            sendB.setEnabled(false);
-            sendB.setBackgroundColor(Color.GRAY);
+            button1.setEnabled(false);
+            button1.setBackgroundColor(Color.GRAY);
+            button2.setEnabled(false);
+            button2.setBackgroundColor(Color.GRAY);
         }
 
         besoinTV = findViewById(R.id.besoinTV);
         profitTV = findViewById(R.id.profitTV);
         rendementTV = findViewById(R.id.rendementTV);
 
-        populateViews();
+        RadioButton proposed = findViewById(R.id.proposedRadio);
+        if (plot.proposed == null)
+            proposed.setEnabled(false);
+
+
+        populateViews(plot);
     }
 
-    private void populateViews() {
-        plotNameTV.setText(plot.getP_name());
+    private void showOriginal(boolean b) {
+        if (b) {
+            populateViews(plot);
+            button1.setText(getString(R.string.send));
+            button1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    send();
+                }
+            });
+
+            button2.setText(getString(R.string.cancel));
+            button2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO: cancel plot
+                }
+            });
+            if (plot.getStatus() == 0) {
+                enableButton1(true);
+                enableButton2(false);
+            } else if (plot.getStatus() == 1){
+                enableButton1(false);
+                enableButton2(true);
+            } else {
+                enableButton1(false);
+                enableButton2(false);
+            }
+            enableViews(true);
+        } else {
+            populateViews(plot.proposed);
+            button1.setText(getString(R.string.accept));
+            button1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO: accept proposed
+                }
+            });
+
+            button2.setText(getString(R.string.refuse));
+            button2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO: refuse proposed
+                }
+            });
+            enableButton1(true);
+            enableButton2(true);
+            enableViews(false);
+        }
+    }
+
+    private void enableButton1(boolean enable) {
+        button1.setEnabled(enable);
+        button1.setBackground(getDrawable(enable ? R.drawable.round_bg_green1 : R.drawable.round_bg_gray));
+    }
+
+    private void enableButton2(boolean enable) {
+        button2.setEnabled(enable);
+        button2.setBackground(getDrawable(enable ? R.drawable.round_bg_green1 : R.drawable.round_bg_gray));
+    }
+
+    private void populateViews(Plot plot) {
         typeET.setText(plot.getType());
         areaET.setText(String.valueOf(plot.getArea()));
         dateTV.setText(formatDate(plot.getS_date()));
@@ -162,6 +223,30 @@ public class PlotActivity extends AppCompatActivity {
         besoinTV.setText(besoin);
         rendementTV.setText(rendement);
         profitTV.setText(profit);
+    }
+
+    private void enableViews(boolean enable) {
+        typeET.setEnabled(enable);
+        areaET.setEnabled(enable);
+        qteET.setEnabled(enable);
+        editB.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.originalRadio:
+                if (checked)
+                    showOriginal(true);
+                break;
+            case R.id.proposedRadio:
+                if (checked)
+                    showOriginal(false);
+                break;
+        }
     }
 
     private String formatDate(Date date) {
@@ -282,13 +367,36 @@ public class PlotActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete:
-                deletePlot();
+                showDeleteAlert();
+                break;
+            case R.id.save:
+                farmerPB.setVisibility(View.VISIBLE);
+                attemptToSave();
                 break;
             case android.R.id.home:
                 onBackPressed();
                 break;
         }
         return true;
+    }
+
+    private void showDeleteAlert() {
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.alert))
+                .setMessage(getString(R.string.delete_plot))
+
+                // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Continue with delete operation
+                        deletePlot();
+                    }
+                })
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton(R.string.no, null)
+                .show();
     }
 
     private void deletePlot() {

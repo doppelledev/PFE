@@ -27,8 +27,16 @@
             android:layout_height="20dp"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="16dp"
+            android:layout_marginTop="4dp"
             android:background="@drawable/green_dot"
             />
+        <ImageView
+            android:id="@+id/proposedIV"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="16dp"
+            android:layout_toStartOf="@id/plotStatusF"
+            android:src="@drawable/ic_new"/>
     </RelativeLayout>
 
 </FrameLayout>

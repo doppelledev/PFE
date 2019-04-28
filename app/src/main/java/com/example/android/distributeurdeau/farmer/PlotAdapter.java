@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.distributeurdeau.ListItemClickListener;
@@ -46,11 +47,13 @@ public class PlotAdapter extends RecyclerView.Adapter<PlotAdapter.ViewHolder> {
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView plotNameTV;
         private FrameLayout plotStatusF;
+        private ImageView proposedIV;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             plotNameTV = itemView.findViewById(R.id.plotNameTV);
             plotStatusF = itemView.findViewById(R.id.plotStatusF);
+            proposedIV = itemView.findViewById(R.id.proposedIV);
             itemView.setOnClickListener(this);
         }
 
@@ -70,6 +73,9 @@ public class PlotAdapter extends RecyclerView.Adapter<PlotAdapter.ViewHolder> {
                     plotStatusF.setBackgroundResource(R.drawable.blue_dot);
                     break;
             }
+
+            if (plot.proposed == null)
+                proposedIV.setVisibility(View.GONE);
         }
 
         @Override

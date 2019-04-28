@@ -22,6 +22,8 @@ public class Plot implements Serializable {
     public float Ym;
     public float Ky;
     private float dotation;
+    public Plot proposed;
+    public boolean isFarmerTurn;
 
     public float getDotation() {
         return dotation;
@@ -47,6 +49,9 @@ public class Plot implements Serializable {
         PLUIE = 0;
         Ym = 2;
         Ky = 1.05f;
+
+        isFarmerTurn = true;
+        proposed = null;
     }
 
     public Plot(Plot p) {
