@@ -81,4 +81,12 @@ public class Templates {
             MessageTemplate.MatchPerformative(ACLMessage.INFORM),
             MessageTemplate.MatchOntology(Strings.ONTOLOGY_NOTIFY)
     );
+
+    public static final MessageTemplate ACCEPT = MessageTemplate.and(
+            MessageTemplate.or(
+                    MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
+                    MessageTemplate.MatchPerformative(ACLMessage.FAILURE)
+            ),
+            MessageTemplate.MatchOntology(Strings.ONTOLOGY_ACCEPT)
+    );
 }

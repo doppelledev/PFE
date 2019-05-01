@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +38,7 @@ public class AnalysePlotActivity extends AppCompatActivity {
     private TextView profitTV;
     private Button acceptB;
     private Button refuseB;
-
+    private ImageView approvedIV;
     private Receiver receiver;
     private Estimation estimation;
 
@@ -55,6 +56,8 @@ public class AnalysePlotActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Strings.ACTION_PROPOSAL_SENT);
         filter.addAction(Strings.ACTION_PROPOSAL_FAILED);
+        filter.addAction(Strings.ACTION_ACCEPT_SUCCEEDED);
+        filter.addAction(Strings.ACTION_ACCEPT_FAILED);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -89,6 +92,14 @@ public class AnalysePlotActivity extends AppCompatActivity {
                 SupervisorActivity.supervisorInterface.propose(proposedPlot);
             }
         });
+
+        approvedIV = findViewById(R.id.approvedIV);
+        if (plot.getStatus() == 2) {
+            acceptB.setVisibility(View.GONE);
+            refuseB.setVisibility(View.GONE);
+        } else {
+            approvedIV.setVisibility(View.GONE);
+        }
     }
 
     private void populateViews() {
@@ -117,7 +128,7 @@ public class AnalysePlotActivity extends AppCompatActivity {
     }
 
     private void accept() {
-
+        SupervisorActivity.supervisorInterface.accept(plot.getP_name(), plot.getFarmer().getFarmer_num());
     }
 
     private void refuse() {
@@ -146,15 +157,23 @@ public class AnalysePlotActivity extends AppCompatActivity {
             } else {
                 enableAccept(true);
                 enablePropose(false);
-                // TODO: accepter le plan
             }
         } else {
 
         }
     }
 
-    private void success() {
+    private void psuccess() {
         Toast.makeText(this, getString(R.string.toast_proposal_sent), Toast.LENGTH_SHORT).show();
+    }
+
+    private void asuccess() {
+        Toast.makeText(this, getString(R.string.toast_plan_accepted), Toast.LENGTH_SHORT).show();
+        acceptB.setVisibility(View.GONE);
+        refuseB.setVisibility(View.GONE);
+        approvedIV.setVisibility(View.VISIBLE);
+        if (proposedPlot != null)
+            plot = proposedPlot;
     }
 
     private void failure() {
@@ -169,9 +188,15 @@ public class AnalysePlotActivity extends AppCompatActivity {
             if (action == null) return;
             switch (action) {
                 case Strings.ACTION_PROPOSAL_SENT:
-                    success();
+                    psuccess();
                     break;
                 case Strings.ACTION_PROPOSAL_FAILED:
+                    failure();
+                    break;
+                case Strings.ACTION_ACCEPT_SUCCEEDED:
+                    asuccess();
+                    break;
+                case Strings.ACTION_ACCEPT_FAILED:
                     failure();
                     break;
             }

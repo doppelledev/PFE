@@ -21,10 +21,12 @@ public class PlotAdapter extends RecyclerView.Adapter<PlotAdapter.ViewHolder> {
 
     private Vector<Plot> plots;
     private ListItemClickListener listener;
+    private boolean isFarmer;
 
-    public PlotAdapter(Vector<Plot> plots, ListItemClickListener listener) {
+    public PlotAdapter(Vector<Plot> plots, ListItemClickListener listener, boolean isFarmer) {
         this.plots = plots;
         this.listener = listener;
+        this.isFarmer = isFarmer;
     }
 
     @NonNull
@@ -74,7 +76,7 @@ public class PlotAdapter extends RecyclerView.Adapter<PlotAdapter.ViewHolder> {
                     break;
             }
 
-            if (plot.proposed == null)
+            if (!isFarmer || plot.proposed == null)
                 proposedIV.setVisibility(View.GONE);
             else {
                 proposedIV.setVisibility(View.VISIBLE);

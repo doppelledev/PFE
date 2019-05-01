@@ -8,5 +8,5 @@ import java.util.Vector;
 public interface SupervisorInterface {
     Vector<CultureData> getCultureData();
     void propose(Plot proposedPlot);
-    void endNegotiation(String plotName, String farmerNum);
+    void accept(String plotName, String farmerNum);
 }

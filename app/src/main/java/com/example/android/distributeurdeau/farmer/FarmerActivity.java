@@ -70,7 +70,7 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
             Log.d(TAG, "onCreate: error: " + e);
         }
 
-        adapter = new PlotAdapter(farmer.getPlots(), this);
+        adapter = new PlotAdapter(farmer.getPlots(), this, true);
         RecyclerView recyclerView = findViewById(R.id.farmerRV);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);

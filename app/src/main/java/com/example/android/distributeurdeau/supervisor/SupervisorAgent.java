@@ -55,6 +55,7 @@ public class SupervisorAgent extends Agent implements SupervisorInterface {
 
         addBehaviour(new CultureDataBehaviour());
         addBehaviour(new ProposalStatusBehaviour());
+        addBehaviour(new AcceptBehaviour());
 
         // Get culture data
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
@@ -81,14 +82,15 @@ public class SupervisorAgent extends Agent implements SupervisorInterface {
     }
 
     @Override
-    public void endNegotiation(String plotName, String farmerNum) {
+    public void accept(String plotName, String farmerNum) {
         ACLMessage message = new ACLMessage(ACLMessage.INFORM);
         message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
-        message.setOntology(Strings.ONTOLOGY_END);
+        message.setOntology(Strings.ONTOLOGY_ACCEPT);
         message.addUserDefinedParameter(Database.p_name, plotName);
         message.addUserDefinedParameter(Database.farmer_num, farmerNum);
         send(message);
     }
+
 
     private class CultureDataBehaviour extends CyclicBehaviour {
         @Override
@@ -121,6 +123,34 @@ public class SupervisorAgent extends Agent implements SupervisorInterface {
                 } else if (message.getPerformative() == ACLMessage.FAILURE) {
                     Intent broadcast = new Intent();
                     broadcast.setAction(Strings.ACTION_PROPOSAL_FAILED);
+                    context.sendBroadcast(broadcast);
+                }
+            } else {
+                block();
+            }
+        }
+    }
+
+    private class AcceptBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.ACCEPT);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    try {
+                        Intent broadcast = new Intent();
+                        Plot proposed = (Plot) message.getContentObject();
+                        String pname = message.getUserDefinedParameter(Database.p_name);
+                        broadcast.setAction(Strings.ACTION_ACCEPT_SUCCEEDED);
+                        broadcast.putExtra(Strings.EXTRA_PLOT, proposed);
+                        broadcast.putExtra(Database.p_name, pname);
+                        context.sendBroadcast(broadcast);
+                    } catch (UnreadableException e) {
+                        e.printStackTrace();
+                    }
+                } else if (message.getPerformative() == ACLMessage.FAILURE) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_ACCEPT_FAILED);
                     context.sendBroadcast(broadcast);
                 }
             } else {

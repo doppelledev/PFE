@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -61,6 +62,7 @@ public class PlotActivity extends AppCompatActivity {
     private Button button1;
     private Button button2;
     private Button editB;
+    private ImageView approvedIV;
 
     private TextView besoinTV;
     private TextView rendementTV;
@@ -155,7 +157,13 @@ public class PlotActivity extends AppCompatActivity {
         if (plot.proposed == null)
             proposedRB.setEnabled(false);
 
-
+        approvedIV = findViewById(R.id.approvedIV);
+        if (plot.getStatus() != 2)
+            approvedIV.setVisibility(View.GONE);
+        else {
+            button1.setVisibility(View.GONE);
+            button2.setVisibility(View.GONE);
+        }
         populateViews(plot);
     }
 
@@ -436,10 +444,15 @@ public class PlotActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete:
-                showDeleteAlert();
+                if (plot.getStatus() == 2)
+                    Toast.makeText(this, getString(R.string.toast_plan_accepted), Toast.LENGTH_SHORT).show();
+                else
+                    showDeleteAlert();
                 break;
             case R.id.save:
-                if (plot.getStatus() == 0) {
+                if (plot.getStatus() == 2)
+                    Toast.makeText(this, getString(R.string.toast_plan_accepted), Toast.LENGTH_SHORT).show();
+                else if (plot.getStatus() == 0) {
                     farmerPB.setVisibility(View.VISIBLE);
                     attemptToSave();
                 } else {

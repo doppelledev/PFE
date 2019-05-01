@@ -110,14 +110,13 @@ public class SupervisorActivity extends AppCompatActivity implements ListItemCli
     }
 
 
-
-
     private class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
 
         }
     }
+
 
     @Override
     public void onBackPressed() {

@@ -72,5 +72,6 @@
     <string name="propose">proposer</string>
     <string name="toast_negotiation_canceled">La négociation a été annulée</string>
     <string name="toast_new_proposal">Une proposition a été reçue</string>
+    <string name="toast_plan_accepted">Le plan a été accepté</string>
 
 </resources>
