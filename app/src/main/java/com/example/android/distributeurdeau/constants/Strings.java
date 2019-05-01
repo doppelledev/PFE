@@ -26,7 +26,8 @@ public class Strings {
     public static final String ACTION_CANCEL_SUCCEEDED = "cancel_succeeded";
     public static final String ACTION_ACCEPT_SUCCEEDED = "accept_succeeded";
     public static final String ACTION_ACCEPT_FAILED = "accept_failed";
-    public static final String ACTION_PLOT_PROPOSED= "plot_proposed";
+    public static final String ACTION_REFUSE_FAILED = "refuse_failed";
+    public static final String ACTION_REFUSE_SUCCEEDED = "refuse_succeeded";
     public static final String ACTION_NOTIFY= "notify";
     // Intent extras
     public static final String EXTRA_FARMER = "farmer";
@@ -43,6 +44,7 @@ public class Strings {
     public static final String ONTOLOGY_PROPOSE = "propose-plot";
     public static final String ONTOLOGY_CANCEL = "cancel-negotiation";
     public static final String ONTOLOGY_ACCEPT = "accept-plan";
+    public static final String ONTOLOGY_REFUSE = "refuse-plan";
     public static final String ONTOLOGY_NOTIFY = "notify";
     public static final String ONTOLOGY_CULTURE_DATA = "culture-data";
     // Other

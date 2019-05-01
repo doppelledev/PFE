@@ -55,6 +55,8 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
         filter.addAction(Strings.ACTION_NOTIFY);
         filter.addAction(Strings.ACTION_ACCEPT_SUCCEEDED);
         filter.addAction(Strings.ACTION_ACCEPT_FAILED);
+        filter.addAction(Strings.ACTION_REFUSE_FAILED);
+        filter.addAction(Strings.ACTION_REFUSE_SUCCEEDED);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -215,6 +217,13 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
                     Plot proposed2 = farmer.getPlots().get(index4).proposed;
                     proposed2.setStatus(2);
                     farmer.getPlots().set(index4, proposed2);
+                    adapter.notifyDataSetChanged();
+                    break;
+                case Strings.ACTION_REFUSE_SUCCEEDED:
+                    Plot refused = (Plot) intent.getSerializableExtra(Strings.EXTRA_PLOT);
+                    refused.setStatus(2);
+                    int index5 = getPlotIndexByName(refused.getP_name());
+                    farmer.getPlots().set(index5, refused);
                     adapter.notifyDataSetChanged();
                     break;
             }

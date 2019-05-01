@@ -91,6 +91,8 @@ public class PlotActivity extends AppCompatActivity {
         filter.addAction(Strings.ACTION_NOTIFY);
         filter.addAction(Strings.ACTION_ACCEPT_SUCCEEDED);
         filter.addAction(Strings.ACTION_ACCEPT_FAILED);
+        filter.addAction(Strings.ACTION_REFUSE_SUCCEEDED);
+        filter.addAction(Strings.ACTION_REFUSE_FAILED);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -169,7 +171,7 @@ public class PlotActivity extends AppCompatActivity {
         }
 
         if (plot.getStatus() == 2)
-            acceptedView();
+            approvedView();
 
         populateViews(plot);
     }
@@ -234,6 +236,34 @@ public class PlotActivity extends AppCompatActivity {
 
     private void refuse() {
         farmerPB.setVisibility(View.VISIBLE);
+        farmerInterface.refuseProposal(refuusedPlot());
+    }
+
+    private void refuseSuccess() {
+        plot = refuusedPlot();
+        plot.setStatus(2);
+        showOriginal(true);
+        approvedView();
+    }
+
+    private Plot refuusedPlot() {
+        Plot refusedPlot = new Plot(plot);
+        refusedPlot.proposed = null;
+        float besoin = (float) Math.floor(plot.getWater_qte());
+        float dotation = (float) Math.floor(plot.getDotation());
+        float estimated = (float) Math.floor((estimation.estimateBesoin(plot, plot.getArea())/0.007)*plot.getArea());
+
+        if (besoin == estimated) {
+            if (besoin > dotation) {
+                refusedPlot.setWater_qte(plot.getDotation());
+            }
+        } else {
+            if (besoin > dotation) {
+                refusedPlot.setWater_qte(plot.getDotation());
+            }
+        }
+
+        return refusedPlot;
     }
 
     private void enableButton1(boolean enable) {
@@ -453,10 +483,10 @@ public class PlotActivity extends AppCompatActivity {
     private void acceptSuccess() {
         plot = plot.proposed;
         plot.setStatus(2);
-        acceptedView();
+        approvedView();
     }
 
-    private void acceptedView() {
+    private void approvedView() {
         approvedIV.setVisibility(View.VISIBLE);
         button2.setVisibility(View.GONE);
         button1.setVisibility(View.GONE);
@@ -554,6 +584,9 @@ public class PlotActivity extends AppCompatActivity {
                     break;
                 case Strings.ACTION_ACCEPT_SUCCEEDED:
                     acceptSuccess();
+                    break;
+                case Strings.ACTION_REFUSE_SUCCEEDED:
+                    refuseSuccess();
                     break;
                 default:
                     failure();

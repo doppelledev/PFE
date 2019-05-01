@@ -55,6 +55,7 @@ public class FarmerAgent extends Agent implements FarmerInterface {
         addBehaviour(new CancelBehaviour());
         addBehaviour(new NotificationBehaviour());
         addBehaviour(new AcceptBehaviour());
+        addBehaviour(new RefuseBehaviour());
         // Get culture data
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         message.setOntology(Strings.ONTOLOGY_CULTURE_DATA);
@@ -128,6 +129,45 @@ public class FarmerAgent extends Agent implements FarmerInterface {
         message.addUserDefinedParameter(Database.p_name, plotName);
         message.addUserDefinedParameter(Database.farmer_num, farmerNum);
         send(message);
+    }
+
+    @Override
+    public void refuseProposal(Plot refusedPlot) {
+        try {
+            ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+            message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
+            message.setOntology(Strings.ONTOLOGY_REFUSE);
+            message.setContentObject(refusedPlot);
+            send(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class RefuseBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.REFUSE);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    try {
+                        Plot plot = (Plot) message.getContentObject();
+                        Intent broadcast = new Intent();
+                        broadcast.setAction(Strings.ACTION_REFUSE_SUCCEEDED);
+                        broadcast.putExtra(Strings.EXTRA_PLOT, plot);
+                        context.sendBroadcast(broadcast);
+                    } catch (UnreadableException e) {
+                        e.printStackTrace();
+                    }
+                } else if (message.getPerformative() == ACLMessage.FAILURE) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_REFUSE_FAILED);
+                    context.sendBroadcast(broadcast);
+                }
+            } else {
+                block();
+            }
+        }
     }
 
     private class AcceptBehaviour extends CyclicBehaviour {

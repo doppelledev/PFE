@@ -131,13 +131,6 @@ public class AnalysePlotActivity extends AppCompatActivity {
         SupervisorActivity.supervisorInterface.accept(plot.getP_name(), plot.getFarmer().getFarmer_num());
     }
 
-    private void refuse() {
-
-    }
-
-
-
-
 
     private void analyse() {
         float besoin = (float) Math.floor(plot.getWater_qte());
@@ -148,31 +141,43 @@ public class AnalysePlotActivity extends AppCompatActivity {
         Log.d(TAG, "analyse: estimated " + estimated);
         if (besoin == estimated) {
             if (besoin > dotation) {
-                float newArea = (float) Math.sqrt(dotation / (plot.Kc * plot.ET0 - plot.PLUIE) * 0.007f);
-                proposedPlot = new Plot(plot);
-                proposedPlot.setArea(newArea);
-                proposedPlot.setWater_qte(plot.getDotation());
-                // TODO : Date de semi
+                tweek();
                 enablePropose(true);
                 enableAccept(false);
             } else {
                 enableAccept(true);
                 enablePropose(false);
             }
-        } else {
-            if (besoin > dotation) {
-                float newArea = (float) Math.sqrt(dotation / (plot.Kc * plot.ET0 - plot.PLUIE) * 0.007f);
-                proposedPlot = new Plot(plot);
-                proposedPlot.setArea(newArea);
-                proposedPlot.setWater_qte(plot.getDotation());
-                // TODO : Date de semi
+        } else if (besoin > estimated){
+            if (estimated > dotation) {
+                tweek();
             } else {
                 proposedPlot = new Plot(plot);
                 proposedPlot.setWater_qte(estimated);
             }
             enablePropose(true);
             enableAccept(false);
+        } else {
+            if (besoin > dotation) {
+                tweek();
+            } else {
+                if (estimated > dotation) {
+                    tweek();
+                } else {
+                    proposedPlot = new Plot(plot);
+                    proposedPlot.setWater_qte(estimated);
+                }
+            }
         }
+    }
+
+    private void tweek() {
+        float dotation = (float) Math.floor(plot.getDotation());
+        float newArea = (float) Math.sqrt(dotation / (plot.Kc * plot.ET0 - plot.PLUIE) * 0.007f);
+        proposedPlot = new Plot(plot);
+        proposedPlot.setArea(newArea);
+        proposedPlot.setWater_qte(plot.getDotation());
+        // TODO : Date de semi
     }
 
     private void psuccess() {
