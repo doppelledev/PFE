@@ -81,7 +81,7 @@ public class SupervisorActivity extends AppCompatActivity implements ListItemCli
         try {
             Log.d(TAG, "logout: killing agent");
             // kill agent
-            MicroRuntime.killAgent(supervisor.getId());
+            MicroRuntime.killAgent(Strings.SUPERVISOR_PREFIX + supervisor.getId());
             // stop container
             MainActivity.microRuntimeServiceBinder.stopAgentContainer(
                     new RuntimeCallback<Void>() {

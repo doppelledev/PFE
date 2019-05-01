@@ -386,6 +386,8 @@ public class PlotActivity extends AppCompatActivity {
         broadcast.putExtra(Strings.EXTRA_STATUS, 1);
         broadcast.putExtra(Strings.EXTRA_PLOT, plot.getP_name());
         sendBroadcast(broadcast);
+        plot.setStatus(1);
+        enableViews(false);
     }
 
     private void deleteSuccess() {
@@ -404,6 +406,7 @@ public class PlotActivity extends AppCompatActivity {
         plot.setStatus(0);
         plot.proposed = null;
         plot.isFarmerTurn = true;
+        enableViews(true);
         Intent broadcast = new Intent();
         broadcast.setAction(Strings.ACTION_PLOT_CANCEL);
         broadcast.putExtra(Strings.EXTRA_PLOT, plot.getP_name());

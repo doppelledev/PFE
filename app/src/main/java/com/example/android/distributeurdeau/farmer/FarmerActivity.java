@@ -123,7 +123,7 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
         try {
             Log.d(TAG, "logout: killing agent");
             // kill agent
-            MicroRuntime.killAgent(farmer.getFarmer_num());
+            MicroRuntime.killAgent(Strings.FARMER_PREFIX + farmer.getFarmer_num());
             // stop container
             MainActivity.microRuntimeServiceBinder.stopAgentContainer(
                     new RuntimeCallback<Void>() {
