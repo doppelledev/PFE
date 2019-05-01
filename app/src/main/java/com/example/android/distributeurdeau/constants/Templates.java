@@ -76,4 +76,9 @@ public class Templates {
             ),
             MessageTemplate.MatchOntology(Strings.ONTOLOGY_CANCEL)
     );
+
+    public static final MessageTemplate NOTIFICATION = MessageTemplate.and(
+            MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+            MessageTemplate.MatchOntology(Strings.ONTOLOGY_NOTIFY)
+    );
 }

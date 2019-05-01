@@ -53,6 +53,7 @@ public class FarmerAgent extends Agent implements FarmerInterface {
         addBehaviour(new DeleteBehaviour());
         addBehaviour(new CultureDataBehaviour());
         addBehaviour(new CancelBehaviour());
+        addBehaviour(new NotificationBehaviour());
         // Get culture data
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         message.setOntology(Strings.ONTOLOGY_CULTURE_DATA);
@@ -230,6 +231,28 @@ public class FarmerAgent extends Agent implements FarmerInterface {
                     Intent broadcast = new Intent();
                     broadcast.setAction(Strings.ACTION_CANCEL_FAILED);
                     context.sendBroadcast(broadcast);
+                }
+            } else {
+                block();
+            }
+        }
+    }
+
+    private class NotificationBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.NOTIFICATION);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.INFORM) {
+                    try {
+                        Intent broadcast = new Intent();
+                        Plot plot = (Plot) message.getContentObject();
+                        broadcast.setAction(Strings.ACTION_NOTIFY);
+                        broadcast.putExtra(Strings.EXTRA_PLOT, plot);
+                        context.sendBroadcast(broadcast);
+                    } catch (UnreadableException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 block();

@@ -65,6 +65,7 @@ public class PlotActivity extends AppCompatActivity {
     private TextView besoinTV;
     private TextView rendementTV;
     private TextView profitTV;
+    RadioButton proposedRB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,7 @@ public class PlotActivity extends AppCompatActivity {
         filter.addAction(Strings.ACTION_DELETE_SUCCEEDED);
         filter.addAction(Strings.ACTION_CANCEL_FAILED);
         filter.addAction(Strings.ACTION_CANCEL_SUCCEEDED);
+        filter.addAction(Strings.ACTION_NOTIFY);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -149,9 +151,9 @@ public class PlotActivity extends AppCompatActivity {
         profitTV = findViewById(R.id.profitTV);
         rendementTV = findViewById(R.id.rendementTV);
 
-        RadioButton proposed = findViewById(R.id.proposedRadio);
+        proposedRB = findViewById(R.id.proposedRadio);
         if (plot.proposed == null)
-            proposed.setEnabled(false);
+            proposedRB.setEnabled(false);
 
 
         populateViews(plot);
@@ -407,10 +409,17 @@ public class PlotActivity extends AppCompatActivity {
         plot.proposed = null;
         plot.isFarmerTurn = true;
         enableViews(true);
+        proposedRB.setEnabled(false);
         Intent broadcast = new Intent();
         broadcast.setAction(Strings.ACTION_PLOT_CANCEL);
         broadcast.putExtra(Strings.EXTRA_PLOT, plot.getP_name());
         sendBroadcast(broadcast);
+    }
+
+    private void refresh(Plot proposed) {
+        plot.proposed = proposed;
+        proposedRB.setEnabled(true);
+        Toast.makeText(this, getString(R.string.toast_new_proposal), Toast.LENGTH_SHORT).show();
     }
 
     private void failure() {
@@ -495,6 +504,9 @@ public class PlotActivity extends AppCompatActivity {
                     break;
                 case Strings.ACTION_CANCEL_SUCCEEDED:
                     cancelSucceeded();
+                    break;
+                case Strings.ACTION_NOTIFY:
+                    refresh((Plot) intent.getSerializableExtra(Strings.EXTRA_PLOT));
                     break;
                 default:
                     failure();

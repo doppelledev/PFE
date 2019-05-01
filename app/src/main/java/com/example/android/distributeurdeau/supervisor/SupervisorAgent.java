@@ -63,25 +63,6 @@ public class SupervisorAgent extends Agent implements SupervisorInterface {
         send(message);
     }
 
-    private class CultureDataBehaviour extends CyclicBehaviour {
-        @Override
-        public void action() {
-            ACLMessage message = receive(Templates.CULTURE_DATA);
-            if (message != null) {
-                if (message.getPerformative() == ACLMessage.CONFIRM) {
-                    try {
-                        cultureData = (Vector<CultureData>) message.getContentObject();
-                        Log.d(TAG, "action: receviec data: " + cultureData.size());
-                    } catch (UnreadableException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-                block();
-            }
-        }
-    }
-
     public Vector<CultureData> getCultureData() {
         return cultureData;
     }
@@ -107,6 +88,25 @@ public class SupervisorAgent extends Agent implements SupervisorInterface {
         message.addUserDefinedParameter(Database.p_name, plotName);
         message.addUserDefinedParameter(Database.farmer_num, farmerNum);
         send(message);
+    }
+
+    private class CultureDataBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.CULTURE_DATA);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    try {
+                        cultureData = (Vector<CultureData>) message.getContentObject();
+                        Log.d(TAG, "action: receviec data: " + cultureData.size());
+                    } catch (UnreadableException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                block();
+            }
+        }
     }
 
     private class ProposalStatusBehaviour extends CyclicBehaviour {

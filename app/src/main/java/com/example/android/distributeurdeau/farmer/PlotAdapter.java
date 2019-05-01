@@ -76,6 +76,9 @@ public class PlotAdapter extends RecyclerView.Adapter<PlotAdapter.ViewHolder> {
 
             if (plot.proposed == null)
                 proposedIV.setVisibility(View.GONE);
+            else {
+                proposedIV.setVisibility(View.VISIBLE);
+            }
         }
 
         @Override

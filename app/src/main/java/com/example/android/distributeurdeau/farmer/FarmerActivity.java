@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.android.distributeurdeau.ListItemClickListener;
 import com.example.android.distributeurdeau.MainActivity;
@@ -51,6 +52,7 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
         filter.addAction(Strings.ACTION_STATUS_UPDATE);
         filter.addAction(Strings.ACTION_PLOT_REMOVE);
         filter.addAction(Strings.ACTION_PLOT_CANCEL);
+        filter.addAction(Strings.ACTION_NOTIFY);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -197,6 +199,13 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
                         plot.isFarmerTurn = true;
                         adapter.notifyDataSetChanged();
                     }
+                    break;
+                case Strings.ACTION_NOTIFY:
+                    Plot proposed = (Plot) intent.getSerializableExtra(Strings.EXTRA_PLOT);
+                    int index3 = getPlotIndexByName(proposed.getP_name());
+                    farmer.getPlots().get(index3).proposed = proposed;
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(FarmerActivity.this, getString(R.string.toast_new_proposal), Toast.LENGTH_SHORT).show();
                     break;
             }
         }
