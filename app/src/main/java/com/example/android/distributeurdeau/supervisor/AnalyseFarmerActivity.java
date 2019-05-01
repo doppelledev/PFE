@@ -48,9 +48,10 @@ public class AnalyseFarmerActivity extends AppCompatActivity implements ListItem
         recyclerView.addItemDecoration(dividerItemDecoration);
 
 
-        Receiver receiver = new Receiver();
+        receiver = new Receiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(Strings.ACTION_ACCEPT_SUCCEEDED);
+        filter.addAction(Strings.ACTION_NOTIFY);
         registerReceiver(receiver, filter);
     }
 
@@ -83,9 +84,23 @@ public class AnalyseFarmerActivity extends AppCompatActivity implements ListItem
                     }
                     adapter.notifyDataSetChanged();
                     break;
+                case Strings.ACTION_NOTIFY:
+                    boolean isSend = intent.getBooleanExtra(Strings.EXTRA_BOOLEAN, false);
+                    Plot notifPlot = (Plot)intent.getSerializableExtra(Strings.EXTRA_PLOT);
+                    if (isSend) {
+                        farmer.getPlots().add(notifPlot);
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        int index1 = getPlotIndexByName(notifPlot.getP_name());
+                        farmer.getPlots().remove(index1);
+                        adapter.notifyDataSetChanged();
+                    }
+                    break;
             }
         }
     }
+
+
 
     private int getPlotIndexByName(String pname) {
         int i;

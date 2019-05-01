@@ -56,7 +56,7 @@ public class SupervisorAgent extends Agent implements SupervisorInterface {
         addBehaviour(new CultureDataBehaviour());
         addBehaviour(new ProposalStatusBehaviour());
         addBehaviour(new AcceptBehaviour());
-
+        addBehaviour(new NotificationBehaviour());
         // Get culture data
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         message.setOntology(Strings.ONTOLOGY_CULTURE_DATA);
@@ -152,6 +152,32 @@ public class SupervisorAgent extends Agent implements SupervisorInterface {
                     Intent broadcast = new Intent();
                     broadcast.setAction(Strings.ACTION_ACCEPT_FAILED);
                     context.sendBroadcast(broadcast);
+                }
+            } else {
+                block();
+            }
+        }
+    }
+
+
+    private class NotificationBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.NOTIFICATION);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.INFORM) {
+                    try {
+                        boolean isSend = Boolean.valueOf(message.getUserDefinedParameter(Strings.ONTOLOGY_NOTIFY));
+                        Log.d(TAG, "action: is send:" + isSend);
+                        Plot plot = (Plot) message.getContentObject();
+                        Intent broadcast = new Intent();
+                        broadcast.setAction(Strings.ACTION_NOTIFY);
+                        broadcast.putExtra(Strings.EXTRA_BOOLEAN, isSend);
+                        broadcast.putExtra(Strings.EXTRA_PLOT, plot);
+                        context.sendBroadcast(broadcast);
+                    } catch (UnreadableException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 block();

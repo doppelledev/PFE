@@ -507,6 +507,8 @@ public class PlotActivity extends AppCompatActivity {
             case R.id.delete:
                 if (plot.getStatus() == 2)
                     Toast.makeText(this, getString(R.string.toast_plan_accepted), Toast.LENGTH_SHORT).show();
+                else if (plot.getStatus() == 1)
+                    Toast.makeText(this, getString(R.string.toast_negotiating), Toast.LENGTH_SHORT).show();
                 else
                     showDeleteAlert();
                 break;

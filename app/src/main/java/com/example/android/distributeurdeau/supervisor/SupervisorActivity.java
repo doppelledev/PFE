@@ -18,6 +18,7 @@ import com.example.android.distributeurdeau.MainActivity;
 import com.example.android.distributeurdeau.R;
 import com.example.android.distributeurdeau.constants.Strings;
 import com.example.android.distributeurdeau.models.Farmer;
+import com.example.android.distributeurdeau.models.Plot;
 import com.example.android.distributeurdeau.models.Supervisor;
 
 import jade.android.MicroRuntimeService;
@@ -56,6 +57,7 @@ public class SupervisorActivity extends AppCompatActivity implements ListItemCli
 
 
         IntentFilter filter = new IntentFilter();
+        filter.addAction(Strings.ACTION_NOTIFY);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -113,8 +115,46 @@ public class SupervisorActivity extends AppCompatActivity implements ListItemCli
     private class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-
+            String action = intent.getAction();
+            if (action == null)
+                return;
+            switch (action) {
+                case Strings.ACTION_NOTIFY:
+                    boolean isSend = intent.getBooleanExtra(Strings.EXTRA_BOOLEAN, false);
+                    Plot notifPlot = (Plot)intent.getSerializableExtra(Strings.EXTRA_PLOT);
+                    String farmerNum = notifPlot.getFarmer().getFarmer_num();
+                    int findex = getFarmerIndexByNum(farmerNum);
+                    Farmer farmer = supervisor.getFarmers().get(findex);
+                    if (isSend) {
+                        farmer.getPlots().add(notifPlot);
+                    } else {
+                        String pname = notifPlot.getP_name();
+                        int pindex = getPlotIndexByName(pname, farmer);
+                        farmer.getPlots().remove(pindex);
+                    }
+                    break;
+            }
         }
+    }
+
+    private int getPlotIndexByName(String pname, Farmer farmer) {
+        int i;
+        for (i = 0; i < farmer.getPlots().size(); i++)
+            if (farmer.getPlots().get(i).getP_name().equals(pname))
+                break;
+        if (i < farmer.getPlots().size())
+            return i;
+        return -1;
+    }
+
+    private int getFarmerIndexByNum(String fnum) {
+        int i;
+        for (i = 0; i < supervisor.getFarmers().size(); i++)
+            if (supervisor.getFarmers().get(i).getFarmer_num().equals(fnum))
+                break;
+        if (i < supervisor.getFarmers().size())
+            return i;
+        return -1;
     }
 
 

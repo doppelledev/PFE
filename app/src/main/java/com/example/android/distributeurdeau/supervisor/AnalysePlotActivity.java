@@ -58,6 +58,7 @@ public class AnalysePlotActivity extends AppCompatActivity {
         filter.addAction(Strings.ACTION_PROPOSAL_FAILED);
         filter.addAction(Strings.ACTION_ACCEPT_SUCCEEDED);
         filter.addAction(Strings.ACTION_ACCEPT_FAILED);
+        filter.addAction(Strings.ACTION_NOTIFY);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -197,6 +198,10 @@ public class AnalysePlotActivity extends AppCompatActivity {
         Toast.makeText(this, getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
     }
 
+    private void handleNotification(Plot notifPlot) {
+
+    }
+
     private class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -215,6 +220,20 @@ public class AnalysePlotActivity extends AppCompatActivity {
                     break;
                 case Strings.ACTION_ACCEPT_FAILED:
                     failure();
+                    break;
+                case Strings.ACTION_NOTIFY:
+                    boolean isSend = intent.getBooleanExtra(Strings.EXTRA_BOOLEAN, false);
+                    if (!isSend) {
+                        Plot notifPlot = (Plot)intent.getSerializableExtra(Strings.EXTRA_PLOT);
+                        if (plot.getP_name().equals(notifPlot.getP_name())) {
+                            Toast.makeText(
+                                    AnalysePlotActivity.this,
+                                    getString(R.string.toast_negotiation_canceled),
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            finish();
+                        }
+                    }
                     break;
             }
         }
