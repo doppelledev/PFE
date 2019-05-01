@@ -11,6 +11,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,13 +25,14 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.distributeurdeau.Estimation;
 import com.example.android.distributeurdeau.MainActivity;
 import com.example.android.distributeurdeau.R;
 import com.example.android.distributeurdeau.constants.Strings;
-import com.example.android.distributeurdeau.models.CultureData;
 import com.example.android.distributeurdeau.models.Plot;
 
 import java.sql.Date;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -48,6 +51,7 @@ public class PlotActivity extends AppCompatActivity {
     private FarmerInterface farmerInterface;
     private Receiver receiver;
     private DatePickerDialog.OnDateSetListener calListener;
+    private Estimation estimation;
 
     private EditText typeET;
     private EditText areaET;
@@ -105,6 +109,8 @@ public class PlotActivity extends AppCompatActivity {
                 dateTV.setText(formatDate(date));
             }
         };
+
+        estimation = new Estimation(farmerInterface.getCultureData());
 
         setupViews();
         showOriginal(true);
@@ -220,9 +226,37 @@ public class PlotActivity extends AppCompatActivity {
         dateTV.setText(formatDate(plot.getS_date()));
         qteET.setText(String.valueOf(plot.getWater_qte()));
 
-        String besoin = String.valueOf(estimateBesoin()) + "  m3";
-        String rendement = String.valueOf(estimateRendement()) + " q/ha";
-        String profit = String.valueOf(estimateProfit()) + " Dh";
+        updateEstimationFields(plot.getArea());
+        areaET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length()>0)
+                    updateEstimationFields(Float.valueOf(String.valueOf(s)));
+                else
+                    emptyEstimationFields();
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+
+    private void emptyEstimationFields() {
+        besoinTV.setText("0 m3");
+        rendementTV.setText("0 q/ha");
+        profitTV.setText("0 Dh");
+    }
+
+    private void updateEstimationFields(float area) {
+        DecimalFormat f = new DecimalFormat("#.##");
+        String besoin = String.valueOf(f.format((estimation.estimateBesoin(plot, area)/0.007)*area))+ " m3";
+        String rendement = String.valueOf(f.format(estimation.estimateRendement(plot, area))) + " q/ha";
+        String profit = String.valueOf(f.format(estimation.estimateProfit(plot, area))) + " Dh";
         besoinTV.setText(besoin);
         rendementTV.setText(rendement);
         profitTV.setText(profit);
@@ -429,28 +463,6 @@ public class PlotActivity extends AppCompatActivity {
     private void deletePlot() {
         farmerPB.setVisibility(View.VISIBLE);
         farmerInterface.deletePlot(plot.getP_name(), plot.getFarmer().getFarmer_num());
-    }
-
-    float estimateBesoin() {
-        return (plot.Kc * plot.ET0 - plot.PLUIE) * plot.getArea() / 0.007f * plot.getArea();
-    }
-
-    float estimateRendement() {
-        float etcAdj = (estimateBesoin() + plot.PLUIE) * plot.getArea();
-        float etc = plot.Kc * plot.ET0 * plot.getArea();
-        return (plot.Ky * (1 - etcAdj / etc) - 1) * plot.Ym * -1;
-    }
-
-    float estimateProfit() {
-        return estimateRendement() * getPriceFromCultureData() * plot.getArea();
-    }
-
-    float getPriceFromCultureData() {
-        for (CultureData data : farmerInterface.getCultureData()) {
-            if (data.getName().equals(plot.getType()))
-                return data.getPrice();
-        }
-        return 300.0f;
     }
 
     @Override

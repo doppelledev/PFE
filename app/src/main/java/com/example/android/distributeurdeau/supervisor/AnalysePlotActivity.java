@@ -13,9 +13,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.distributeurdeau.Estimation;
 import com.example.android.distributeurdeau.R;
 import com.example.android.distributeurdeau.constants.Strings;
-import com.example.android.distributeurdeau.models.CultureData;
 import com.example.android.distributeurdeau.models.Plot;
 
 import java.sql.Date;
@@ -39,6 +39,7 @@ public class AnalysePlotActivity extends AppCompatActivity {
     private Button refuseB;
 
     private Receiver receiver;
+    private Estimation estimation;
 
     private boolean b;
 
@@ -49,6 +50,7 @@ public class AnalysePlotActivity extends AppCompatActivity {
 
         plot = (Plot) getIntent().getSerializableExtra(Strings.EXTRA_PLOT);
 
+        estimation = new Estimation(SupervisorActivity.supervisorInterface.getCultureData());
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Strings.ACTION_PROPOSAL_SENT);
@@ -122,32 +124,14 @@ public class AnalysePlotActivity extends AppCompatActivity {
 
     }
 
-    float estimateBesoin() {
-        return (plot.Kc * plot.ET0 - plot.PLUIE) * plot.getArea() / 0.007f * plot.getArea();
-    }
 
-    float estimateRendement() {
-        float etcAdj = (estimateBesoin() + plot.PLUIE) * plot.getArea();
-        float etc = plot.Kc * plot.ET0 * plot.getArea();
-        return (plot.Ky * (1 - etcAdj / etc) - 1) * plot.Ym * -1;
-    }
 
-    float estimateProfit() {
-        return estimateRendement() * getPriceFromCultureData() * plot.getArea();
-    }
 
-    float getPriceFromCultureData() {
-        for (CultureData data : SupervisorActivity.supervisorInterface.getCultureData()) {
-            if (data.getName().equals(plot.getType()))
-                return data.getPrice();
-        }
-        return 300.0f;
-    }
 
     private void analyse() {
         float besoin = (float) Math.floor(plot.getWater_qte());
         float dotation = (float) Math.floor(plot.getDotation());
-        float estimated = (float) Math.floor(estimateBesoin());
+        float estimated = (float) Math.floor(estimation.estimateBesoin(plot, plot.getArea()));
 
         Log.d(TAG, "analyse: besoin " + besoin);
         Log.d(TAG, "analyse: estimated " + estimated);
