@@ -16,5 +16,7 @@ public interface FarmerInterface {
 
     void cancelNegotiation(String plotName, String farmerNum);
 
+    void acceptProposal(String plotName, String farmerNum);
+
     Vector<CultureData> getCultureData();
 }

@@ -151,6 +151,7 @@ public class AnalysePlotActivity extends AppCompatActivity {
                 float newArea = (float) Math.sqrt(dotation / (plot.Kc * plot.ET0 - plot.PLUIE) * 0.007f);
                 proposedPlot = new Plot(plot);
                 proposedPlot.setArea(newArea);
+                proposedPlot.setWater_qte(plot.getDotation());
                 // TODO : Date de semi
                 enablePropose(true);
                 enableAccept(false);
@@ -159,7 +160,18 @@ public class AnalysePlotActivity extends AppCompatActivity {
                 enablePropose(false);
             }
         } else {
-
+            if (besoin > dotation) {
+                float newArea = (float) Math.sqrt(dotation / (plot.Kc * plot.ET0 - plot.PLUIE) * 0.007f);
+                proposedPlot = new Plot(plot);
+                proposedPlot.setArea(newArea);
+                proposedPlot.setWater_qte(plot.getDotation());
+                // TODO : Date de semi
+            } else {
+                proposedPlot = new Plot(plot);
+                proposedPlot.setWater_qte(estimated);
+            }
+            enablePropose(true);
+            enableAccept(false);
         }
     }
 

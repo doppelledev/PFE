@@ -54,6 +54,7 @@ public class FarmerAgent extends Agent implements FarmerInterface {
         addBehaviour(new CultureDataBehaviour());
         addBehaviour(new CancelBehaviour());
         addBehaviour(new NotificationBehaviour());
+        addBehaviour(new AcceptBehaviour());
         // Get culture data
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         message.setOntology(Strings.ONTOLOGY_CULTURE_DATA);
@@ -117,6 +118,38 @@ public class FarmerAgent extends Agent implements FarmerInterface {
         message.addUserDefinedParameter(Database.p_name, plotName);
         message.addUserDefinedParameter(Database.farmer_num, farmerNum);
         send(message);
+    }
+
+    @Override
+    public void acceptProposal(String plotName, String farmerNum) {
+        ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
+        message.setOntology(Strings.ONTOLOGY_ACCEPT);
+        message.addUserDefinedParameter(Database.p_name, plotName);
+        message.addUserDefinedParameter(Database.farmer_num, farmerNum);
+        send(message);
+    }
+
+    private class AcceptBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.ACCEPT);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    String pname = message.getUserDefinedParameter(Database.p_name);
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_ACCEPT_SUCCEEDED);
+                    broadcast.putExtra(Strings.EXTRA_PLOT, pname);
+                    context.sendBroadcast(broadcast);
+                } else if (message.getPerformative() == ACLMessage.FAILURE) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_ACCEPT_FAILED);
+                    context.sendBroadcast(broadcast);
+                }
+            } else {
+                block();
+            }
+        }
     }
 
     private class ModificationBehaviour extends CyclicBehaviour {

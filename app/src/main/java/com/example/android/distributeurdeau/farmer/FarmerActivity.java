@@ -53,6 +53,8 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
         filter.addAction(Strings.ACTION_PLOT_REMOVE);
         filter.addAction(Strings.ACTION_PLOT_CANCEL);
         filter.addAction(Strings.ACTION_NOTIFY);
+        filter.addAction(Strings.ACTION_ACCEPT_SUCCEEDED);
+        filter.addAction(Strings.ACTION_ACCEPT_FAILED);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -206,6 +208,14 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
                     farmer.getPlots().get(index3).proposed = proposed;
                     adapter.notifyDataSetChanged();
                     Toast.makeText(FarmerActivity.this, getString(R.string.toast_new_proposal), Toast.LENGTH_SHORT).show();
+                    break;
+                case Strings.ACTION_ACCEPT_SUCCEEDED:
+                    String pname = intent.getStringExtra(Strings.EXTRA_PLOT);
+                    int index4 = getPlotIndexByName(pname);
+                    Plot proposed2 = farmer.getPlots().get(index4).proposed;
+                    proposed2.setStatus(2);
+                    farmer.getPlots().set(index4, proposed2);
+                    adapter.notifyDataSetChanged();
                     break;
             }
         }

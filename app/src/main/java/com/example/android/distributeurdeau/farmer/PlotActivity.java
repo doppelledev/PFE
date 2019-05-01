@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,7 +68,7 @@ public class PlotActivity extends AppCompatActivity {
     private TextView besoinTV;
     private TextView rendementTV;
     private TextView profitTV;
-    RadioButton proposedRB;
+    private RadioButton proposedRB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,8 @@ public class PlotActivity extends AppCompatActivity {
         filter.addAction(Strings.ACTION_CANCEL_FAILED);
         filter.addAction(Strings.ACTION_CANCEL_SUCCEEDED);
         filter.addAction(Strings.ACTION_NOTIFY);
+        filter.addAction(Strings.ACTION_ACCEPT_SUCCEEDED);
+        filter.addAction(Strings.ACTION_ACCEPT_FAILED);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
@@ -164,6 +167,10 @@ public class PlotActivity extends AppCompatActivity {
             button1.setVisibility(View.GONE);
             button2.setVisibility(View.GONE);
         }
+
+        if (plot.getStatus() == 2)
+            acceptedView();
+
         populateViews(plot);
     }
 
@@ -202,7 +209,7 @@ public class PlotActivity extends AppCompatActivity {
             button1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO: accept proposed
+                    accept();
                 }
             });
 
@@ -210,7 +217,7 @@ public class PlotActivity extends AppCompatActivity {
             button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO: refuse proposed
+                    refuse();
                 }
             });
             enableButton1(true);
@@ -218,6 +225,15 @@ public class PlotActivity extends AppCompatActivity {
             // TODO: set on click listeners
             enableViews(false);
         }
+    }
+
+    private void accept() {
+        farmerPB.setVisibility(View.VISIBLE);
+        farmerInterface.acceptProposal(plot.getP_name(), plot.getFarmer().getFarmer_num());
+    }
+
+    private void refuse() {
+        farmerPB.setVisibility(View.VISIBLE);
     }
 
     private void enableButton1(boolean enable) {
@@ -434,6 +450,21 @@ public class PlotActivity extends AppCompatActivity {
         Toast.makeText(this, getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
     }
 
+    private void acceptSuccess() {
+        plot = plot.proposed;
+        plot.setStatus(2);
+        acceptedView();
+    }
+
+    private void acceptedView() {
+        approvedIV.setVisibility(View.VISIBLE);
+        button2.setVisibility(View.GONE);
+        button1.setVisibility(View.GONE);
+        RadioGroup rg = findViewById(R.id.radioGroup);
+        rg.setVisibility(View.GONE);
+        enableViews(false);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.plot_menu, menu);
@@ -520,6 +551,9 @@ public class PlotActivity extends AppCompatActivity {
                     break;
                 case Strings.ACTION_NOTIFY:
                     refresh((Plot) intent.getSerializableExtra(Strings.EXTRA_PLOT));
+                    break;
+                case Strings.ACTION_ACCEPT_SUCCEEDED:
+                    acceptSuccess();
                     break;
                 default:
                     failure();
