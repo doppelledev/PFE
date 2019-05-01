@@ -40,5 +40,9 @@ public class Strings {
     public static final String ONTOLOGY_CANCEL = "cancel-negotiation";
     public static final String ONTOLOGY_END = "end-negotiation";
     public static final String ONTOLOGY_CULTURE_DATA = "culture-data";
+    // Other
+    public static final String FARMER_PREFIX = "Farmer - ";
+    public static final String SUPERVISOR_PREFIX = "Supervisor - ";
+
 
 }

@@ -46,7 +46,7 @@ public class SupervisorActivity extends AppCompatActivity implements ListItemCli
         supervisor = (Supervisor) getIntent().getSerializableExtra(Strings.EXTRA_SUPERVISOR);
         // Get the interface to communicate with the agent
         try {
-            supervisorInterface = MicroRuntime.getAgent(supervisor.getId())
+            supervisorInterface = MicroRuntime.getAgent(Strings.SUPERVISOR_PREFIX + supervisor.getId())
                     .getO2AInterface(SupervisorInterface.class);
 
         } catch (Exception e) {

@@ -21,9 +21,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.distributeurdeau.constants.Strings;
 import com.example.android.distributeurdeau.login.LoginActivity;
 import com.example.android.distributeurdeau.login.LoginAgent;
-import com.example.android.distributeurdeau.constants.Strings;
+
+import java.util.Random;
 
 import jade.android.AndroidHelper;
 import jade.android.MicroRuntimeService;
@@ -38,7 +40,7 @@ import jade.wrapper.ControllerException;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String INITIAL_AGENT_NAME = "Initial Agent";
+    public static String initial_agent_name;
     private static final String TAG = "MainActivity";
     public static MicroRuntimeServiceBinder microRuntimeServiceBinder;
     public static ServiceConnection serviceConnection;
@@ -102,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         mainB.setVisibility(View.VISIBLE);
         mainPB.setVisibility(View.GONE);
         try {
-            MicroRuntime.killAgent(INITIAL_AGENT_NAME);
+            MicroRuntime.killAgent(initial_agent_name);
         } catch (NotFoundException e) {
             e.printStackTrace();
         }
@@ -216,8 +218,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startAgent() {
+        Random rand = new Random();
+        int n = rand.nextInt(6666);
+        initial_agent_name = "initial-agent-" + n;
+
         microRuntimeServiceBinder.startAgent(
-                INITIAL_AGENT_NAME,
+                initial_agent_name,
                 LoginAgent.class.getName(),
                 new Object[]{getApplicationContext()},
                 new RuntimeCallback<Void>() {
@@ -225,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(Void thisIsNull) {
                         Log.d(TAG, "startAgent(): Successfully started the Initial Agent");
                         try {
-                            agentStartupCallback.onSuccess(MicroRuntime.getAgent(INITIAL_AGENT_NAME));
+                            agentStartupCallback.onSuccess(MicroRuntime.getAgent(initial_agent_name));
                         } catch (ControllerException e) {
                             // Should never happen
                             Log.d(TAG, "This should never happen: " + e.getMessage());

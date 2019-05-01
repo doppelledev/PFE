@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
                 Context.BIND_AUTO_CREATE);
 
         try {
-            loginInterface = MicroRuntime.getAgent(MainActivity.INITIAL_AGENT_NAME)
+            loginInterface = MicroRuntime.getAgent(MainActivity.initial_agent_name)
                     .getO2AInterface(LoginInterface.class);
         } catch (ControllerException e) {
             e.printStackTrace();
@@ -142,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
         // kill the initial agent and dispose of the service and the receiver
         Log.d(TAG, "onDestroy: destroying");
         try {
-            MicroRuntime.killAgent(MainActivity.INITIAL_AGENT_NAME);
+            MicroRuntime.killAgent(MainActivity.initial_agent_name);
         } catch (NotFoundException e) {
             e.printStackTrace();
         }
@@ -159,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
             if (isFarmer) {
                 try {
                     MicroRuntime.startAgent(
-                            ((Farmer) args[1]).getFarmer_num(),
+                            Strings.FARMER_PREFIX + ((Farmer) args[1]).getFarmer_num(),
                             FarmerAgent.class.getName(),
                             args
                     );
@@ -169,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 try {
                     MicroRuntime.startAgent(
-                            ((Supervisor) args[1]).getId(),
+                            Strings.SUPERVISOR_PREFIX + ((Supervisor) args[1]).getId(),
                             SupervisorAgent.class.getName(),
                             args
                     );

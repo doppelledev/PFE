@@ -60,7 +60,7 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
 
         // Get the interface to communicate with the agent
         try {
-            farmerInterface = MicroRuntime.getAgent(farmer.getFarmer_num())
+            farmerInterface = MicroRuntime.getAgent(Strings.FARMER_PREFIX + farmer.getFarmer_num())
                     .getO2AInterface(FarmerInterface.class);
 
         } catch (Exception e) {

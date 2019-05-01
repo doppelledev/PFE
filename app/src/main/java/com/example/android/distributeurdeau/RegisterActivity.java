@@ -46,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Get the interface to communicate with the agent
         try {
-            loginInterface = MicroRuntime.getAgent(MainActivity.INITIAL_AGENT_NAME)
+            loginInterface = MicroRuntime.getAgent(MainActivity.initial_agent_name)
                     .getO2AInterface(LoginInterface.class);
         } catch (ControllerException e) {
             e.printStackTrace();

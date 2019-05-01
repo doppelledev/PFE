@@ -93,7 +93,7 @@ public class PlotActivity extends AppCompatActivity {
 
         // Get the interface to communicate with the agent
         try {
-            farmerInterface = MicroRuntime.getAgent(plot.getFarmer().getFarmer_num())
+            farmerInterface = MicroRuntime.getAgent(Strings.FARMER_PREFIX + plot.getFarmer().getFarmer_num())
                     .getO2AInterface(FarmerInterface.class);
 
         } catch (Exception e) {
