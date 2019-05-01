@@ -137,7 +137,7 @@ public class AnalysePlotActivity extends AppCompatActivity {
         Log.d(TAG, "analyse: estimated " + estimated);
         if (besoin == estimated) {
             if (besoin > dotation) {
-                float newArea = dotation / (plot.Kc * plot.ET0 - plot.PLUIE);
+                float newArea = (float) Math.sqrt(dotation / (plot.Kc * plot.ET0 - plot.PLUIE) * 0.007f);
                 proposedPlot = new Plot(plot);
                 proposedPlot.setArea(newArea);
                 // TODO : Date de semi
