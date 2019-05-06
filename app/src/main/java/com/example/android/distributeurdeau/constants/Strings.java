@@ -36,7 +36,7 @@ public class Strings {
     public static final String EXTRA_SUPERVISOR = "supervisor";
     public static final String EXTRA_PLOT = "plot";
     public static final String EXTRA_STATUS = "status";
-    public static final String EXTRA_BOOLEAN = "boolean";
+    public static final String EXTRA_INT = "integer";
     // Ontology
     public static final String ONTOLOGY_AUTH = "authentication";
     public static final String ONTOLOGY_REG = "registration";

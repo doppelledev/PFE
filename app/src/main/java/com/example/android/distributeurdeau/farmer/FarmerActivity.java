@@ -180,8 +180,10 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
                     String plotName = intent.getStringExtra(Strings.EXTRA_PLOT);
                     int status = intent.getIntExtra(Strings.EXTRA_STATUS, 0);
                     for (Plot plot : farmer.getPlots()) {
-                        if (plot.getP_name().equals(plotName))
-                            plot.setStatus(status);
+                        if (plot.getP_name().equals(plotName)) {
+                            if (plot.getStatus() != 2)
+                                plot.setStatus(status);
+                        }
                     }
                     adapter.notifyDataSetChanged();
                     break;
@@ -215,8 +217,13 @@ public class FarmerActivity extends AppCompatActivity implements ListItemClickLi
                     String pname = intent.getStringExtra(Strings.EXTRA_PLOT);
                     int index4 = getPlotIndexByName(pname);
                     Plot proposed2 = farmer.getPlots().get(index4).proposed;
-                    proposed2.setStatus(2);
-                    farmer.getPlots().set(index4, proposed2);
+                    if (proposed2 != null) {
+                        proposed2.setStatus(2);
+                        farmer.getPlots().set(index4, proposed2);
+                    } else {
+                        farmer.getPlots().get(index4).setStatus(2);
+                        Log.d(TAG, "onReceive: " + pname + " " + farmer.getPlots().get(index4).getStatus());
+                    }
                     adapter.notifyDataSetChanged();
                     break;
                 case Strings.ACTION_REFUSE_SUCCEEDED:

@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity android:name=".supervisor.AnalyseFarmerActivity"></activity>
-        <activity android:name=".supervisor.AnalysePlotActivity" />
+        <activity android:name=".supervisor.AnalysePlotActivity" android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".farmer.AddPlotActivity" />
         <activity android:name=".farmer.FarmerActivity" />
         <activity android:name=".login.LoginActivity" />

@@ -137,54 +137,6 @@ public class AnalysePlotActivity extends AppCompatActivity {
         return (day + "-" + month + "-" + year);
     }
 
-//    private void analyse() {
-//        float besoin = (float) Math.floor(plot.getWater_qte());
-//        float dotation = (float) Math.floor(plot.getDotation());
-//        float estimated = (float) Math.floor((estimation.estimateBesoin(plot)/0.007)*plot.getArea());
-//
-//        Log.d(TAG, "analyse: besoin " + besoin);
-//        Log.d(TAG, "analyse: estimated " + estimated);
-//        if (besoin == estimated) {
-//            if (besoin > dotation) {
-//                tweek();
-//                enablePropose(true);
-//                enableAccept(false);
-//            } else {
-//                enableAccept(true);
-//                enablePropose(false);
-//            }
-//        } else if (besoin > estimated){
-//            if (estimated > dotation) {
-//                tweek();
-//            } else {
-//                proposedPlot = new Plot(plot);
-//                proposedPlot.setWater_qte(estimated);
-//            }
-//            enablePropose(true);
-//            enableAccept(false);
-//        } else {
-//            if (besoin > dotation) {
-//                tweek();
-//            } else {
-//                if (estimated > dotation) {
-//                    tweek();
-//                } else {
-//                    proposedPlot = new Plot(plot);
-//                    proposedPlot.setWater_qte(estimated);
-//                }
-//            }
-//        }
-//    }
-
-    private void tweek() {
-        float dotation = (float) Math.floor(plot.getDotation());
-        float newArea = (float) Math.sqrt(dotation / (plot.Kc * plot.ET0 - plot.PLUIE) * 0.007f);
-        proposedPlot = new Plot(plot);
-        proposedPlot.setArea(newArea);
-        proposedPlot.setWater_qte(plot.getDotation());
-        // TODO : Date de semi
-    }
-
     private void failure() {
         Toast.makeText(this, getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
     }
@@ -205,17 +157,24 @@ public class AnalysePlotActivity extends AppCompatActivity {
                     success();
                     break;
                 case Strings.ACTION_NOTIFY:
-                    boolean isSend = intent.getBooleanExtra(Strings.EXTRA_BOOLEAN, false);
-                    if (!isSend) {
-                        Plot notifPlot = (Plot)intent.getSerializableExtra(Strings.EXTRA_PLOT);
-                        if (plot.getP_name().equals(notifPlot.getP_name())) {
-                            Toast.makeText(
-                                    AnalysePlotActivity.this,
-                                    getString(R.string.toast_negotiation_canceled),
-                                    Toast.LENGTH_SHORT
-                            ).show();
-                            finish();
-                        }
+                    int state = intent.getIntExtra(Strings.EXTRA_INT, -1);
+                    Plot notifPlot = (Plot)intent.getSerializableExtra(Strings.EXTRA_PLOT);
+                    switch (state) {
+                        case 1:
+                            if (plot.getP_name().equals(notifPlot.getP_name())) {
+                                Toast.makeText(
+                                        AnalysePlotActivity.this,
+                                        getString(R.string.toast_negotiation_canceled),
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                                finish();
+                            }
+                            break;
+                        case 2:
+                            plot = notifPlot;
+                            populateViews();
+                            approvedIV.setVisibility(View.VISIBLE);
+                            break;
                     }
                     break;
                 default:

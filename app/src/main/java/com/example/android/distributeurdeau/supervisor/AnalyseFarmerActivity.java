@@ -85,18 +85,36 @@ public class AnalyseFarmerActivity extends AppCompatActivity implements ListItem
                     adapter.notifyDataSetChanged();
                     break;
                 case Strings.ACTION_NOTIFY:
-                    boolean isSend = intent.getBooleanExtra(Strings.EXTRA_BOOLEAN, false);
+                    int state = intent.getIntExtra(Strings.EXTRA_INT, -1);
                     Plot notifPlot = (Plot)intent.getSerializableExtra(Strings.EXTRA_PLOT);
-                    if (isSend) {
-                        farmer.getPlots().add(notifPlot);
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        int index1 = getPlotIndexByName(notifPlot.getP_name());
-                        farmer.getPlots().remove(index1);
-                        adapter.notifyDataSetChanged();
+                    switch (state) {
+                        case 0:
+                            farmer.getPlots().add(notifPlot);
+                            adapter.notifyDataSetChanged();
+                            break;
+                        case 1:
+                            int index1 = getPlotIndexByName(notifPlot.getP_name());
+                            farmer.getPlots().remove(index1);
+                            adapter.notifyDataSetChanged();
+                            break;
+                        case 2:
+                            notifPlot.setStatus(2);
+                            int index5 = getPlotIndexByName(notifPlot.getP_name());
+                            farmer.getPlots().set(index5, notifPlot);
+                            adapter.notifyDataSetChanged();
+                            break;
                     }
-                    break;
             }
+        }
+
+        private int getPlotIndexByName(String pname) {
+            int i;
+            for (i = 0; i < farmer.getPlots().size(); i++)
+                if (farmer.getPlots().get(i).getP_name().equals(pname))
+                    break;
+            if (i < farmer.getPlots().size())
+                return i;
+            return -1;
         }
     }
 

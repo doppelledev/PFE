@@ -120,17 +120,26 @@ public class SupervisorActivity extends AppCompatActivity implements ListItemCli
                 return;
             switch (action) {
                 case Strings.ACTION_NOTIFY:
-                    boolean isSend = intent.getBooleanExtra(Strings.EXTRA_BOOLEAN, false);
+                    int state = intent.getIntExtra(Strings.EXTRA_INT, -1);
                     Plot notifPlot = (Plot)intent.getSerializableExtra(Strings.EXTRA_PLOT);
                     String farmerNum = notifPlot.getFarmer().getFarmer_num();
                     int findex = getFarmerIndexByNum(farmerNum);
                     Farmer farmer = supervisor.getFarmers().get(findex);
-                    if (isSend) {
-                        farmer.getPlots().add(notifPlot);
-                    } else {
-                        String pname = notifPlot.getP_name();
-                        int pindex = getPlotIndexByName(pname, farmer);
-                        farmer.getPlots().remove(pindex);
+                    switch (state) {
+                        case 0:
+                            farmer.getPlots().add(notifPlot);
+                            break;
+                        case 1:
+                            String pname = notifPlot.getP_name();
+                            int pindex = getPlotIndexByName(pname, farmer);
+                            farmer.getPlots().remove(pindex);
+                            break;
+                        case 2:
+                            notifPlot.setStatus(2);
+                            int index5 = getPlotIndexByName(notifPlot.getP_name(), farmer);
+                            farmer.getPlots().set(index5, notifPlot);
+                            adapter.notifyDataSetChanged();
+                            break;
                     }
                     break;
             }

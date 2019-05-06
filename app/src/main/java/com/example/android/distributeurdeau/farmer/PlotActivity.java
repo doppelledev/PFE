@@ -502,7 +502,8 @@ public class PlotActivity extends AppCompatActivity {
     }
 
     private void acceptSuccess() {
-        plot = plot.proposed;
+        if (plot.proposed != null)
+            plot = plot.proposed;
         plot.setStatus(2);
         approvedView();
     }
