@@ -66,7 +66,7 @@ public class AddPlotActivity extends AppCompatActivity {
                 Context.BIND_AUTO_CREATE);
 
         try {
-            farmerInterface = MicroRuntime.getAgent(farmer.getFarmer_num())
+            farmerInterface = MicroRuntime.getAgent(Strings.FARMER_PREFIX + farmer.getFarmer_num())
                     .getO2AInterface(FarmerInterface.class);
 
         } catch (Exception e) {

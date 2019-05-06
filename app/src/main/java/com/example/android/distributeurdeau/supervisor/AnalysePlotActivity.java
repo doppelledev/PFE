@@ -136,7 +136,7 @@ public class AnalysePlotActivity extends AppCompatActivity {
     private void analyse() {
         float besoin = (float) Math.floor(plot.getWater_qte());
         float dotation = (float) Math.floor(plot.getDotation());
-        float estimated = (float) Math.floor((estimation.estimateBesoin(plot, plot.getArea())/0.007)*plot.getArea());
+        float estimated = (float) Math.floor((estimation.estimateBesoin(plot)/0.007)*plot.getArea());
 
         Log.d(TAG, "analyse: besoin " + besoin);
         Log.d(TAG, "analyse: estimated " + estimated);

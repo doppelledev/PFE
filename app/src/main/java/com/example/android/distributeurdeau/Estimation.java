@@ -13,18 +13,19 @@ public class Estimation {
         this.cultureData = cultureData;
     }
 
-    public float estimateBesoin(Plot plot, float area) {
-        return (plot.Kc * plot.ET0 - plot.PLUIE) * area;
+    public float estimateBesoin(Plot plot) {
+        return (plot.Kc * plot.ET0 - plot.PLUIE) * plot.getArea();
     }
 
-    public float estimateRendement(Plot plot, float area) {
-        float etcAdj = (estimateBesoin(plot, area) + plot.PLUIE) * area;
-        float etc = plot.Kc * plot.ET0 * area;
+    public float estimateRendement(Plot plot) {
+        //besoin
+        float etcAdj = plot.getWater_qte()*0.007f + plot.PLUIE * plot.getArea();
+        float etc = plot.Kc * plot.ET0 * plot.getArea();
         return (plot.Ky * (1 - etcAdj / etc) - 1) * plot.Ym * -1;
     }
 
-    public float estimateProfit(Plot plot, float area) {
-        return estimateRendement(plot, area) * getPriceFromCultureData(plot.getType()) * area;
+    public float estimateProfit(Plot plot) {
+        return estimateRendement(plot) * getPriceFromCultureData(plot.getType()) * plot.getArea();
     }
 
     public float getPriceFromCultureData(String type) {

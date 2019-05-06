@@ -173,6 +173,8 @@ public class PlotActivity extends AppCompatActivity {
         if (plot.getStatus() == 2)
             approvedView();
 
+
+
         populateViews(plot);
     }
 
@@ -224,7 +226,9 @@ public class PlotActivity extends AppCompatActivity {
             });
             enableButton1(true);
             enableButton2(true);
-            // TODO: set on click listeners
+
+
+
             enableViews(false);
         }
     }
@@ -251,7 +255,7 @@ public class PlotActivity extends AppCompatActivity {
         refusedPlot.proposed = null;
         float besoin = (float) Math.floor(plot.getWater_qte());
         float dotation = (float) Math.floor(plot.getDotation());
-        float estimated = (float) Math.floor((estimation.estimateBesoin(plot, plot.getArea())/0.007)*plot.getArea());
+        float estimated = (float) Math.floor((estimation.estimateBesoin(plot)/0.007)*plot.getArea());
 
         if (besoin == estimated) {
             if (besoin > dotation) {
@@ -282,37 +286,53 @@ public class PlotActivity extends AppCompatActivity {
         dateTV.setText(formatDate(plot.getS_date()));
         qteET.setText(String.valueOf(plot.getWater_qte()));
 
-        updateEstimationFields(plot.getArea());
-        areaET.addTextChangedListener(new TextWatcher() {
+        updateBesoinField();
+        TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length()>0)
-                    updateEstimationFields(Float.valueOf(String.valueOf(s)));
-                else
-                    emptyEstimationFields();
+                updateBesoinField();
             }
+
             @Override
             public void afterTextChanged(Editable s) {
 
             }
-        });
+        };
+        areaET.addTextChangedListener(textWatcher);
+        qteET.addTextChangedListener(textWatcher);
     }
 
-
-    private void emptyEstimationFields() {
-        besoinTV.setText("0 m3");
-        rendementTV.setText("0 q/ha");
-        profitTV.setText("0 Dh");
-    }
-
-    private void updateEstimationFields(float area) {
+    private void updateBesoinField(){
         DecimalFormat f = new DecimalFormat("#.##");
-        String besoin = String.valueOf(f.format((estimation.estimateBesoin(plot, area)/0.007)*area))+ " m3";
-        String rendement = String.valueOf(f.format(estimation.estimateRendement(plot, area))) + " q/ha";
-        String profit = String.valueOf(f.format(estimation.estimateProfit(plot, area))) + " Dh";
+        String qte = qteET.getText().toString();
+        String area = areaET.getText().toString();
+        String besoin;
+        String rendement;
+        String profit;
+
+        if(area.isEmpty()){
+            besoin = "0 m3";
+            rendement = "0 q/ha";
+            profit = "0 Dh";
+        }else{
+            Plot plotcopy = new Plot(plot);
+            plotcopy.setArea(Float.valueOf(area));
+            besoin = String.valueOf(f.format((estimation.estimateBesoin(plotcopy)/0.007)*plotcopy.getArea()))+ " m3";
+            if(qte.isEmpty() || Float.valueOf(qte) == 0 || Float.valueOf(area) == 0){
+                rendement = "0 q/ha";
+                profit = "0 Dh";
+            }else{
+                plotcopy.setWater_qte(Float.valueOf(qte));
+                rendement = String.valueOf(f.format(estimation.estimateRendement(plotcopy))) + " q/ha";
+                profit = String.valueOf(f.format(estimation.estimateProfit(plotcopy))) + " Dh";
+            }
+
+        }
         besoinTV.setText(besoin);
         rendementTV.setText(rendement);
         profitTV.setText(profit);
@@ -469,6 +489,7 @@ public class PlotActivity extends AppCompatActivity {
         broadcast.putExtra(Strings.EXTRA_PLOT, plot.getP_name());
         sendBroadcast(broadcast);
     }
+
 
     private void refresh(Plot proposed) {
         plot.proposed = proposed;
