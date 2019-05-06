@@ -57,6 +57,7 @@ public class SupervisorAgent extends Agent implements SupervisorInterface {
         addBehaviour(new ProposalStatusBehaviour());
         addBehaviour(new AcceptBehaviour());
         addBehaviour(new NotificationBehaviour());
+        addBehaviour(new DotationBehaviour());
         // Get culture data
         ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
         message.setOntology(Strings.ONTOLOGY_CULTURE_DATA);
@@ -91,6 +92,17 @@ public class SupervisorAgent extends Agent implements SupervisorInterface {
         send(message);
     }
 
+    @Override
+    public void setDotation(String pname, String fnum, float dotation) {
+        ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+        message.addReceiver(new AID(Database.manager, AID.ISLOCALNAME));
+        message.setOntology(Strings.ONTOLOGY_DOTATION);
+        message.addUserDefinedParameter(Database.p_name, pname);
+        message.addUserDefinedParameter(Database.farmer_num, fnum);
+        message.addUserDefinedParameter(Database.dotation, String.valueOf(dotation));
+        send(message);
+    }
+
 
     private class CultureDataBehaviour extends CyclicBehaviour {
         @Override
@@ -104,6 +116,26 @@ public class SupervisorAgent extends Agent implements SupervisorInterface {
                     } catch (UnreadableException e) {
                         e.printStackTrace();
                     }
+                }
+            } else {
+                block();
+            }
+        }
+    }
+
+    private class DotationBehaviour extends CyclicBehaviour {
+        @Override
+        public void action() {
+            ACLMessage message = receive(Templates.DOTATION);
+            if (message != null) {
+                if (message.getPerformative() == ACLMessage.CONFIRM) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_DOTATION_SUCCESS);
+                    context.sendBroadcast(broadcast);
+                } else if (message.getPerformative() == ACLMessage.FAILURE) {
+                    Intent broadcast = new Intent();
+                    broadcast.setAction(Strings.ACTION_DOTATION_FAILED);
+                    context.sendBroadcast(broadcast);
                 }
             } else {
                 block();

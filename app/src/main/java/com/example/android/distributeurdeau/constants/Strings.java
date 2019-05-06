@@ -29,6 +29,8 @@ public class Strings {
     public static final String ACTION_REFUSE_FAILED = "refuse_failed";
     public static final String ACTION_REFUSE_SUCCEEDED = "refuse_succeeded";
     public static final String ACTION_NOTIFY= "notify";
+    public static final String ACTION_DOTATION_SUCCESS = "dotation_success";
+    public static final String ACTION_DOTATION_FAILED = "dotation_failed";
     // Intent extras
     public static final String EXTRA_FARMER = "farmer";
     public static final String EXTRA_SUPERVISOR = "supervisor";
@@ -48,6 +50,7 @@ public class Strings {
     public static final String ONTOLOGY_REFUSE = "refuse-plan";
     public static final String ONTOLOGY_NOTIFY = "notify";
     public static final String ONTOLOGY_CULTURE_DATA = "culture-data";
+    public static final String ONTOLOGY_DOTATION = "set-dotation";
     // Other
     public static final String FARMER_PREFIX = "Farmer - ";
     public static final String SUPERVISOR_PREFIX = "Supervisor - ";

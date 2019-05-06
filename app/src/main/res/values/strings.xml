@@ -73,5 +73,8 @@
     <string name="toast_negotiation_canceled">La négociation a été annulée</string>
     <string name="toast_new_proposal">Une proposition a été reçue</string>
     <string name="toast_plan_accepted">Le plan a été accepté</string>
+    <string name="toast_dotation_saved">La dotation a été affectée</string>
+    <string name="toast_enter_dotation">Entrer une dotation</string>
+    <string name="dotation">Dotation</string>
 
 </resources>

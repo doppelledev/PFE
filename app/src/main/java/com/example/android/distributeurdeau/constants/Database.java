@@ -20,5 +20,6 @@ public class Database {
     public static String water_qte = "water_quantity";
     public static String error = "error";
     public static String success = "success";
+    public static String dotation = "dotation";
 
 }

@@ -97,4 +97,12 @@ public class Templates {
             ),
             MessageTemplate.MatchOntology(Strings.ONTOLOGY_REFUSE)
     );
+
+    public static final MessageTemplate DOTATION = MessageTemplate.and(
+            MessageTemplate.or(
+                    MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
+                    MessageTemplate.MatchPerformative(ACLMessage.FAILURE)
+            ),
+            MessageTemplate.MatchOntology(Strings.ONTOLOGY_DOTATION)
+    );
 }

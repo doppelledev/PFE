@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -36,13 +36,13 @@ public class AnalysePlotActivity extends AppCompatActivity {
     private TextView besoinTV;
     private TextView rendementTV;
     private TextView profitTV;
-    private Button acceptB;
-    private Button refuseB;
+    private TextView dotationTV;
+    private Button dotationB;
+    private EditText dotationET;
     private ImageView approvedIV;
     private Receiver receiver;
     private Estimation estimation;
 
-    private boolean b;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +59,13 @@ public class AnalysePlotActivity extends AppCompatActivity {
         filter.addAction(Strings.ACTION_ACCEPT_SUCCEEDED);
         filter.addAction(Strings.ACTION_ACCEPT_FAILED);
         filter.addAction(Strings.ACTION_NOTIFY);
+        filter.addAction(Strings.ACTION_DOTATION_FAILED);
+        filter.addAction(Strings.ACTION_DOTATION_SUCCESS);
         receiver = new Receiver();
         registerReceiver(receiver, filter);
 
         setupViews();
         populateViews();
-        analyse();
     }
 
     private void setupViews() {
@@ -78,29 +79,31 @@ public class AnalysePlotActivity extends AppCompatActivity {
         besoinTV = findViewById(R.id.besoinTV);
         rendementTV = findViewById(R.id.rendementTV);
         profitTV = findViewById(R.id.profitTV);
-        acceptB = findViewById(R.id.acceptB);
-        acceptB.setOnClickListener(new View.OnClickListener() {
+
+        dotationTV = findViewById(R.id.dotationTV);
+        dotationB = findViewById(R.id.dotationB);
+        dotationB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                accept();
+                setDotation();
             }
         });
-        refuseB = findViewById(R.id.refuseB);
-        refuseB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
-                SupervisorActivity.supervisorInterface.propose(proposedPlot);
-            }
-        });
+        dotationET = findViewById(R.id.dotationET);
+        dotationET.setText(String.valueOf(plot.getDotation()));
 
         approvedIV = findViewById(R.id.approvedIV);
-        if (plot.getStatus() == 2) {
-            acceptB.setVisibility(View.GONE);
-            refuseB.setVisibility(View.GONE);
-        } else {
-            approvedIV.setVisibility(View.GONE);
+        if (plot.getDotation() != 0) {
+            enableButton(false);
         }
+
+        approvedIV = findViewById(R.id.approvedIV);
+        if (plot.getStatus() != 2)
+            approvedIV.setVisibility(View.GONE);
+    }
+
+    private void enableButton(boolean enable) {
+        dotationB.setVisibility(enable ? View.VISIBLE : View.GONE);
+        dotationET.setEnabled(enable);
     }
 
     private void populateViews() {
@@ -111,14 +114,20 @@ public class AnalysePlotActivity extends AppCompatActivity {
         qteTV.setText(String.valueOf(plot.getWater_qte()));
     }
 
-    void enableAccept(boolean enable) {
-        acceptB.setEnabled(enable);
-        acceptB.setBackground(getDrawable(enable ? R.drawable.round_bg_green1 : R.drawable.round_bg_gray));
-    }
+    private void setDotation() {
+        progressBar.setVisibility(View.VISIBLE);
+        String dotationStr = dotationET.getText().toString();
+        if (dotationStr.isEmpty()) {
+            Toast.makeText(this, getString(R.string.toast_enter_dotation), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        float dotation = Float.valueOf(dotationStr);
+        if (dotation <= 0) {
+            Toast.makeText(this, getString(R.string.toast_enter_dotation), Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-    void enablePropose(boolean enable) {
-        refuseB.setEnabled(enable);
-        refuseB.setBackground(getDrawable(enable ? R.drawable.round_bg_green1 : R.drawable.round_bg_gray));
+        SupervisorActivity.supervisorInterface.setDotation(plot.getP_name(), plot.getFarmer().getFarmer_num(), dotation);
     }
 
     private String formatDate(Date date) {
@@ -128,49 +137,44 @@ public class AnalysePlotActivity extends AppCompatActivity {
         return (day + "-" + month + "-" + year);
     }
 
-    private void accept() {
-        SupervisorActivity.supervisorInterface.accept(plot.getP_name(), plot.getFarmer().getFarmer_num());
-    }
-
-
-    private void analyse() {
-        float besoin = (float) Math.floor(plot.getWater_qte());
-        float dotation = (float) Math.floor(plot.getDotation());
-        float estimated = (float) Math.floor((estimation.estimateBesoin(plot)/0.007)*plot.getArea());
-
-        Log.d(TAG, "analyse: besoin " + besoin);
-        Log.d(TAG, "analyse: estimated " + estimated);
-        if (besoin == estimated) {
-            if (besoin > dotation) {
-                tweek();
-                enablePropose(true);
-                enableAccept(false);
-            } else {
-                enableAccept(true);
-                enablePropose(false);
-            }
-        } else if (besoin > estimated){
-            if (estimated > dotation) {
-                tweek();
-            } else {
-                proposedPlot = new Plot(plot);
-                proposedPlot.setWater_qte(estimated);
-            }
-            enablePropose(true);
-            enableAccept(false);
-        } else {
-            if (besoin > dotation) {
-                tweek();
-            } else {
-                if (estimated > dotation) {
-                    tweek();
-                } else {
-                    proposedPlot = new Plot(plot);
-                    proposedPlot.setWater_qte(estimated);
-                }
-            }
-        }
-    }
+//    private void analyse() {
+//        float besoin = (float) Math.floor(plot.getWater_qte());
+//        float dotation = (float) Math.floor(plot.getDotation());
+//        float estimated = (float) Math.floor((estimation.estimateBesoin(plot)/0.007)*plot.getArea());
+//
+//        Log.d(TAG, "analyse: besoin " + besoin);
+//        Log.d(TAG, "analyse: estimated " + estimated);
+//        if (besoin == estimated) {
+//            if (besoin > dotation) {
+//                tweek();
+//                enablePropose(true);
+//                enableAccept(false);
+//            } else {
+//                enableAccept(true);
+//                enablePropose(false);
+//            }
+//        } else if (besoin > estimated){
+//            if (estimated > dotation) {
+//                tweek();
+//            } else {
+//                proposedPlot = new Plot(plot);
+//                proposedPlot.setWater_qte(estimated);
+//            }
+//            enablePropose(true);
+//            enableAccept(false);
+//        } else {
+//            if (besoin > dotation) {
+//                tweek();
+//            } else {
+//                if (estimated > dotation) {
+//                    tweek();
+//                } else {
+//                    proposedPlot = new Plot(plot);
+//                    proposedPlot.setWater_qte(estimated);
+//                }
+//            }
+//        }
+//    }
 
     private void tweek() {
         float dotation = (float) Math.floor(plot.getDotation());
@@ -181,25 +185,13 @@ public class AnalysePlotActivity extends AppCompatActivity {
         // TODO : Date de semi
     }
 
-    private void psuccess() {
-        Toast.makeText(this, getString(R.string.toast_proposal_sent), Toast.LENGTH_SHORT).show();
-    }
-
-    private void asuccess() {
-        Toast.makeText(this, getString(R.string.toast_plan_accepted), Toast.LENGTH_SHORT).show();
-        acceptB.setVisibility(View.GONE);
-        refuseB.setVisibility(View.GONE);
-        approvedIV.setVisibility(View.VISIBLE);
-        if (proposedPlot != null)
-            plot = proposedPlot;
-    }
-
     private void failure() {
         Toast.makeText(this, getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
     }
 
-    private void handleNotification(Plot notifPlot) {
-
+    private void success() {
+        Toast.makeText(this, getString(R.string.toast_dotation_saved), Toast.LENGTH_SHORT).show();
+        enableButton(false);
     }
 
     private class Receiver extends BroadcastReceiver {
@@ -209,17 +201,8 @@ public class AnalysePlotActivity extends AppCompatActivity {
             String action = intent.getAction();
             if (action == null) return;
             switch (action) {
-                case Strings.ACTION_PROPOSAL_SENT:
-                    psuccess();
-                    break;
-                case Strings.ACTION_PROPOSAL_FAILED:
-                    failure();
-                    break;
-                case Strings.ACTION_ACCEPT_SUCCEEDED:
-                    asuccess();
-                    break;
-                case Strings.ACTION_ACCEPT_FAILED:
-                    failure();
+                case Strings.ACTION_DOTATION_SUCCESS:
+                    success();
                     break;
                 case Strings.ACTION_NOTIFY:
                     boolean isSend = intent.getBooleanExtra(Strings.EXTRA_BOOLEAN, false);
@@ -235,6 +218,8 @@ public class AnalysePlotActivity extends AppCompatActivity {
                         }
                     }
                     break;
+                default:
+                    failure();
             }
         }
     }

@@ -9,4 +9,5 @@ public interface SupervisorInterface {
     Vector<CultureData> getCultureData();
     void propose(Plot proposedPlot);
     void accept(String plotName, String farmerNum);
+    void setDotation(String pname, String fnum, float dotation);
 }
